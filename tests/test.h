@@ -1,4 +1,6 @@
-// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
+// Helpers for the tests: translating, building and running CSP programs.
+// Copyright (C) 2026 Ivan Janevski
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef CSPCC_TEST_H
 #define CSPCC_TEST_H
@@ -113,18 +115,18 @@ inline Translation translate(std::string_view source, const std::vector<Define> 
     return result;
 }
 
-// Compile the Ada runtime once into obj/tests/runtime, for every program to use.
+// Compile the Ada runtime once into build/tests/runtime, for every program to use.
 inline bool build_runtime()
 {
-    std::filesystem::path directory = "obj/tests/runtime";
+    std::filesystem::path directory = "build/tests/runtime";
     std::filesystem::create_directories(directory);
     std::ofstream(directory / "csp_runtime.ads") << runtime_spec();
     std::ofstream(directory / "csp_runtime.adb") << runtime_body();
-    return std::system("cd obj/tests/runtime && gcc -c -gnat2022 csp_runtime.adb > build 2>&1") ==
+    return std::system("cd build/tests/runtime && gcc -c -gnat2022 csp_runtime.adb > build 2>&1") ==
            0;
 }
 
-// Translate a program into obj/tests/NAME, build it with GNAT and run it with arguments.
+// Translate a program into build/tests/NAME, build it with GNAT and run it with arguments.
 inline Run run(const std::string &name, std::string_view source, const std::string &arguments = "",
                const std::vector<Define> &defines = {})
 {
@@ -134,7 +136,7 @@ inline Run run(const std::string &name, std::string_view source, const std::stri
     result.m_messages = translation.m_messages;
     INFO(translation.m_messages);
     REQUIRE(translation.m_ok);
-    std::filesystem::path directory = std::filesystem::path("obj/tests") / name;
+    std::filesystem::path directory = std::filesystem::path("build/tests") / name;
     std::filesystem::create_directories(directory);
     std::ofstream(directory / (unit + ".adb")) << translation.m_ada;
     static bool runtimeBuilt = build_runtime();

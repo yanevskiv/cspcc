@@ -54,10 +54,10 @@ RW :: [
 ```
 
 ```sh
-make                                   # builds ./cspcc
-./cspcc examples/readers_writers.csp   # writes readers_writers.adb and csp_runtime.ad[sb]
-gnatmake readers_writers.adb
-./readers_writers --trace --timeout=2
+make                                        # builds build/cspcc
+build/cspcc examples/readers_writers.csp    # writes readers_writers.adb and csp_runtime.ad[sb]
+gnatmake readers_writers.adb                # builds ./readers_writers
+./readers_writers --trace --timeout=2       # runs it for two seconds, printing every message
 ```
 
 `READING` and `WRITING` are hooks: a command nothing defines prints the process
@@ -68,10 +68,10 @@ You need `g++` (C++20) and `make`; running a translated program needs GNAT,
 and the tests need Catch2 3.
 
 ```sh
-make            # ./cspcc
+make            # build/cspcc, with the objects in build/objs
 make test       # the Catch2 tests in tests/, which also build and run CSP programs
-make examples   # each examples/NAME.csp built into examples/NAME
-make clean
+make examples   # each examples/NAME.csp built into build/examples/NAME
+make clean      # removes build/
 ```
 
 # Options

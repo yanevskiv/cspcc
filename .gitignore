@@ -1,5 +1,1 @@
-obj/*
-!obj/.gitkeep
-/cspcc
-examples/*
-!examples/*.csp
+/build/
