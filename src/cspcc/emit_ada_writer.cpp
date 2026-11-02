@@ -1,37 +1,16 @@
-/*
- * C++ file for the Ada main procedure of a translated CSP program.
- *
- * Copyright (C) 2026 Ivan Janevski
- *
- * cspcc  is  free  software;  you  can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free  Software  Foundation;  either  version 3 of the License, or (at
- * your option) any later version.
- *
- * cspcc  is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS  FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
- *
- * You  should  have  received  a copy of the GNU General Public License
- * along with cspcc; if not, see <https://www.gnu.org/licenses/>.
- */
+// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
 
-// Project headers for the writers.
 #include "cspcc/emit_ada_writer.h"
 #include "cspcc/emit_expression_writer.h"
 #include "cspcc/emit_process_writer.h"
 
-// Standard headers for building names.
 #include <algorithm>
 #include <cctype>
 #include <utility>
 
-// Namespace for cspcc's Ada emitter.
 namespace cspcc
 {
 
-    // Namespace for the writer's word lists.
     namespace
     {
 
@@ -76,7 +55,6 @@ namespace cspcc
         , m_unit(std::move(unit))
         , m_source(std::move(source))
     {
-        // Empty.
     }
 
     // Write the context, the declarations, the task bodies and the main statements.

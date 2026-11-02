@@ -1,36 +1,15 @@
-/*
- * C++ file for cspcc's parser.
- *
- * Copyright (C) 2026 Ivan Janevski
- *
- * cspcc  is  free  software;  you  can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free  Software  Foundation;  either  version 3 of the License, or (at
- * your option) any later version.
- *
- * cspcc  is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS  FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
- *
- * You  should  have  received  a copy of the GNU General Public License
- * along with cspcc; if not, see <https://www.gnu.org/licenses/>.
- */
+// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
 
-// Project headers for the parser and the token names it reports.
 #include "cspcc/parser_grammar.h"
 #include "cspcc/diagnostics_abort.h"
 #include "cspcc/lexer_tokenizer.h"
 
-// Standard headers for building messages.
 #include <string>
 #include <utility>
 
-// Namespace for cspcc's parser.
 namespace cspcc
 {
 
-    // Namespace for the parser's helpers.
     namespace
     {
 
@@ -79,7 +58,6 @@ namespace cspcc
         : m_tokens(tokens)
         , m_diagnostics(diagnostics)
     {
-        // Empty.
     }
 
     // Parse constants, parallel commands and definitions until the end.

@@ -1,21 +1,4 @@
-/*
- * C++ header for a CSP constant, const N = 5.
- *
- * Copyright (C) 2026 Ivan Janevski
- *
- * cspcc  is  free  software;  you  can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free  Software  Foundation;  either  version 3 of the License, or (at
- * your option) any later version.
- *
- * cspcc  is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS  FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
- *
- * You  should  have  received  a copy of the GNU General Public License
- * along with cspcc; if not, see <https://www.gnu.org/licenses/>.
- */
+// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
 
 #ifndef CSPCC_DATA_CONSTANT_DEFINITION_H
 #define CSPCC_DATA_CONSTANT_DEFINITION_H
@@ -26,22 +9,22 @@
 #include <memory>
 #include <string>
 
-/** Namespace for cspcc declarations. */
+// Namespace for cspcc declarations.
 namespace cspcc
 {
-    /** Namespace for cspcc data declarations. */
+    // Namespace for cspcc data declarations.
     namespace data
     {
-        /** Describes a named constant. */
+        // Describes a named constant.
         struct DataConstantDefinition
         {
-            /** Name of the constant. */
+            // Name of the constant.
             std::string m_name;
 
-            /** Position of the name. */
+            // Position of the name.
             DataLocation m_location;
 
-            /** Value as written. */
+            // Value as written.
             std::unique_ptr<DataExpression> m_value;
         };
 

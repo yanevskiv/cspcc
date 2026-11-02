@@ -1,21 +1,4 @@
-/*
- * C++ header for a CSP command.
- *
- * Copyright (C) 2026 Ivan Janevski
- *
- * cspcc  is  free  software;  you  can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free  Software  Foundation;  either  version 3 of the License, or (at
- * your option) any later version.
- *
- * cspcc  is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS  FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
- *
- * You  should  have  received  a copy of the GNU General Public License
- * along with cspcc; if not, see <https://www.gnu.org/licenses/>.
- */
+// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
 
 #ifndef CSPCC_DATA_COMMAND_H
 #define CSPCC_DATA_COMMAND_H
@@ -32,76 +15,76 @@
 #include <string>
 #include <vector>
 
-/** Namespace for cspcc declarations. */
+// Namespace for cspcc declarations.
 namespace cspcc
 {
-    /** Namespace for cspcc data declarations. */
+    // Namespace for cspcc data declarations.
     namespace data
     {
         struct DataEntry;
         struct DataSymbol;
 
-        /** Describes a command and, after sema, its resolved message. */
+        // Describes a command and, after sema, its resolved message.
         struct DataCommand
         {
-            /** Kind of the command. */
+            // Kind of the command.
             DataCommandKind m_kind = DataCommandKind::Skip;
 
-            /** Position of the command. */
+            // Position of the command.
             DataLocation m_location;
 
-            /** Targets of an assignment, one or a tuple. */
+            // Targets of an assignment, one or a tuple.
             std::vector<std::unique_ptr<DataExpression>> m_targets;
 
-            /** Values of an assignment, one or a tuple. */
+            // Values of an assignment, one or a tuple.
             std::vector<std::unique_ptr<DataExpression>> m_values;
 
-            /** Names a declaration declares. */
+            // Names a declaration declares.
             std::vector<std::string> m_names;
 
-            /** Position of each declared name. */
+            // Position of each declared name.
             std::vector<DataLocation> m_name_locations;
 
-            /** Type a declaration gives its names. */
+            // Type a declaration gives its names.
             DataTypeSpecifier m_type;
 
-            /** Symbols a declaration creates. */
+            // Symbols a declaration creates.
             std::vector<DataSymbol *> m_symbols;
 
-            /** Process an input reads from or an output writes to. */
+            // Process an input reads from or an output writes to.
             DataProcessName m_process;
 
-            /** Message of an input or an output as written. */
+            // Message of an input or an output as written.
             std::unique_ptr<DataExpression> m_message;
 
-            /** Name of a macro or a hook. */
+            // Name of a macro or a hook.
             std::string m_name;
 
-            /** Arguments of a hook. */
+            // Arguments of a hook.
             std::vector<std::unique_ptr<DataExpression>> m_args;
 
-            /** Whether a macro or a hook was written with parentheses. */
+            // Whether a macro or a hook was written with parentheses.
             bool m_has_parens = false;
 
-            /** Commands of a block. */
+            // Commands of a block.
             std::vector<std::unique_ptr<DataCommand>> m_body;
 
-            /** Guarded commands of an alternative or a repetitive command. */
+            // Guarded commands of an alternative or a repetitive command.
             std::vector<std::unique_ptr<DataGuardedCommand>> m_guards;
 
-            /** Constructor of the message, empty when it has none. */
+            // Constructor of the message, empty when it has none.
             std::string m_constructor;
 
-            /** Whether the message is a plain value or tuple, with no constructor. */
+            // Whether the message is a plain value or tuple, with no constructor.
             bool m_anonymous = true;
 
-            /** Values or targets the message carries. */
+            // Values or targets the message carries.
             std::vector<DataExpression *> m_parts;
 
-            /** Entry of the receiving process the message travels through. */
+            // Entry of the receiving process the message travels through.
             DataEntry *m_entry = nullptr;
 
-            /** Whether a macro command calls a hook. */
+            // Whether a macro command calls a hook.
             bool m_is_hook = false;
         };
 

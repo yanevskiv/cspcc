@@ -1,39 +1,18 @@
-/*
- * C++ header for the exception that stops a parse.
- *
- * Copyright (C) 2026 Ivan Janevski
- *
- * cspcc  is  free  software;  you  can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free  Software  Foundation;  either  version 3 of the License, or (at
- * your option) any later version.
- *
- * cspcc  is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS  FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
- *
- * You  should  have  received  a copy of the GNU General Public License
- * along with cspcc; if not, see <https://www.gnu.org/licenses/>.
- */
+// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
 
 #ifndef CSPCC_DIAGNOSTICS_ABORT_H
 #define CSPCC_DIAGNOSTICS_ABORT_H
 
 #include <exception>
 
-/** Namespace for cspcc declarations. */
+// Namespace for cspcc declarations.
 namespace cspcc
 {
-    /** Signals an error, already reported, that the parser can't recover from. */
+    // Signals an error, already reported, that the parser can't recover from.
     class DiagnosticsAbort : public std::exception
     {
     public:
-        /**
-         * Describe the exception.
-         *
-         * @return A fixed description.
-         */
+        // Describe the exception.
         const char *what() const noexcept override;
     };
 

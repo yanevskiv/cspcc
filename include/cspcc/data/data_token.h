@@ -1,21 +1,4 @@
-/*
- * C++ header for one CSP token.
- *
- * Copyright (C) 2026 Ivan Janevski
- *
- * cspcc  is  free  software;  you  can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free  Software  Foundation;  either  version 3 of the License, or (at
- * your option) any later version.
- *
- * cspcc  is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS  FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
- *
- * You  should  have  received  a copy of the GNU General Public License
- * along with cspcc; if not, see <https://www.gnu.org/licenses/>.
- */
+// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
 
 #ifndef CSPCC_DATA_TOKEN_H
 #define CSPCC_DATA_TOKEN_H
@@ -25,28 +8,28 @@
 
 #include <string>
 
-/** Namespace for cspcc declarations. */
+// Namespace for cspcc declarations.
 namespace cspcc
 {
-    /** Namespace for cspcc data declarations. */
+    // Namespace for cspcc data declarations.
     namespace data
     {
-        /** Describes a CSP token, its spelling and its value. */
+        // Describes a CSP token, its spelling and its value.
         struct DataToken
         {
-            /** Kind of the token. */
+            // Kind of the token.
             DataTokenKind m_kind = DataTokenKind::Eof;
 
-            /** Spelling of the token in the source. */
+            // Spelling of the token in the source.
             std::string m_text;
 
-            /** Position of the token's first character. */
+            // Position of the token's first character.
             DataLocation m_location;
 
-            /** Value of an integer or the code of a character. */
+            // Value of an integer or the code of a character.
             long long m_integer = 0;
 
-            /** Value of a real number. */
+            // Value of a real number.
             double m_real = 0;
         };
 

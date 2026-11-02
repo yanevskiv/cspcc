@@ -1,33 +1,12 @@
-/*
- * C++ file for the Ada body of one translated CSP process definition.
- *
- * Copyright (C) 2026 Ivan Janevski
- *
- * cspcc  is  free  software;  you  can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free  Software  Foundation;  either  version 3 of the License, or (at
- * your option) any later version.
- *
- * cspcc  is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS  FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
- *
- * You  should  have  received  a copy of the GNU General Public License
- * along with cspcc; if not, see <https://www.gnu.org/licenses/>.
- */
+// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
 
-// Project header for the writer.
 #include "cspcc/emit_process_writer.h"
 
-// Standard header for moving the source name.
 #include <utility>
 
-// Namespace for cspcc's Ada emitter.
 namespace cspcc
 {
 
-    // Namespace for the writer's helpers.
     namespace
     {
 
@@ -62,7 +41,6 @@ namespace cspcc
         , m_names(names)
         , m_source(std::move(source))
     {
-        // Empty.
     }
 
     // Name the indices and locals, write the body, then put the declarations above it.

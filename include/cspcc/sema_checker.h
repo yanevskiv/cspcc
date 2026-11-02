@@ -1,21 +1,4 @@
-/*
- * C++ header for cspcc's semantic checks.
- *
- * Copyright (C) 2026 Ivan Janevski
- *
- * cspcc  is  free  software;  you  can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free  Software  Foundation;  either  version 3 of the License, or (at
- * your option) any later version.
- *
- * cspcc  is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS  FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
- *
- * You  should  have  received  a copy of the GNU General Public License
- * along with cspcc; if not, see <https://www.gnu.org/licenses/>.
- */
+// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
 
 #ifndef CSPCC_SEMA_CHECKER_H
 #define CSPCC_SEMA_CHECKER_H
@@ -46,279 +29,134 @@
 #include <utility>
 #include <vector>
 
-/** Namespace for cspcc declarations. */
+// Namespace for cspcc declarations.
 namespace cspcc
 {
-    /** Resolves names and types, expands macros and lays out the processes of a program. */
+    // Resolves names and types, expands macros and lays out the processes of a program.
     class SemaChecker
     {
     public:
-        /**
-         * Prepare to check one program.
-         *
-         * @param diagnostics Destination of semantic errors and warnings.
-         */
+        // Prepare to check one program.
         explicit SemaChecker(DiagnosticsEngine &diagnostics);
 
-        /**
-         * Check a parsed program, expanding its macros in place.
-         *
-         * @param ast Program to check, which must outlive the result.
-         * @param defines Constants given on the command line.
-         * @return The checked program, or null after errors.
-         */
+        // Check a parsed program, expanding its macros in place.
         std::unique_ptr<data::DataProgram> check(data::DataAst &ast,
                                                  const std::vector<data::DataDefine> &defines);
 
-        /**
-         * Name a type for messages.
-         *
-         * @param base Type to name.
-         * @return Its CSP name, such as integer.
-         */
+        // Name a type for messages.
         static std::string_view type_name(data::DataTypeBase base);
 
-        /**
-         * Describe a message by its constructor and the types of its parts.
-         *
-         * @param constructor Constructor, empty when the message has none.
-         * @param anonymous Whether the message has no constructor.
-         * @param types Types of the parts.
-         * @return Text such as has(integer), or (integer, real).
-         */
+        // Describe a message by its constructor and the types of its parts.
         static std::string message_text(std::string_view constructor, bool anonymous,
                                         const std::vector<data::DataTypeBase> &types);
 
     private:
-        /**
-         * Resolve the constants, the -D values overriding or adding to them.
-         *
-         * @param ast Program whose constants to resolve.
-         * @param defines Constants given on the command line.
-         */
+        // Resolve the constants, the -D values overriding or adding to them.
         void check_constants(data::DataAst &ast, const std::vector<data::DataDefine> &defines);
 
-        /**
-         * Parse the value of one -D.
-         *
-         * @param define Name and text of the value.
-         * @return The value, or null after an error.
-         */
+        // Parse the value of one -D.
         data::DataExpression *parse_define(const data::DataDefine &define);
 
-        /**
-         * Tell macros from processes: a top-level definition used as a command is a macro.
-         *
-         * @param ast Program whose definitions to sort.
-         * @return The definitions that are processes.
-         */
+        // Tell macros from processes: a top-level definition used as a command is a macro.
         std::vector<data::DataDefinition *> classify_definitions(data::DataAst &ast);
 
-        /**
-         * Collect the names used as commands.
-         *
-         * @param commands Commands to search, nested ones included.
-         * @param names Destination of the names.
-         */
+        // Collect the names used as commands.
         static void
         collect_macro_uses(const std::vector<std::unique_ptr<data::DataCommand>> &commands,
                            std::set<std::string> &names);
 
-        /**
-         * Group the processes into families and number every process.
-         *
-         * @param definitions Definitions that are processes.
-         */
+        // Group the processes into families and number every process.
         void build_families(const std::vector<data::DataDefinition *> &definitions);
 
-        /**
-         * List the processes one definition stands for.
-         *
-         * @param family Family the definition belongs to.
-         * @param variant Variant made from the definition.
-         * @param taken Subscripts already defined in the family.
-         */
+        // List the processes one definition stands for.
         void enumerate_instances(data::DataFamily &family, data::DataVariant &variant,
                                  std::set<std::vector<long long>> &taken);
 
-        /**
-         * Resolve the body of one definition.
-         *
-         * @param family Family the definition belongs to.
-         * @param variant Variant made from the definition.
-         */
+        // Resolve the body of one definition.
         void resolve_variant(data::DataFamily &family, data::DataVariant &variant);
 
-        /**
-         * Resolve a command list, expanding the macros it uses.
-         *
-         * @param commands Commands to resolve.
-         * @return The commands with each macro replaced by its body.
-         */
+        // Resolve a command list, expanding the macros it uses.
         std::vector<std::unique_ptr<data::DataCommand>>
         resolve_commands(std::vector<std::unique_ptr<data::DataCommand>> commands);
 
-        /**
-         * Resolve one command that isn't a macro.
-         *
-         * @param command Command to resolve.
-         */
+        // Resolve one command that isn't a macro.
         void resolve_command(data::DataCommand &command);
 
-        /**
-         * Declare the names of a declaration.
-         *
-         * @param command Declaration to resolve.
-         */
+        // Declare the names of a declaration.
         void resolve_declaration(data::DataCommand &command);
 
-        /**
-         * Resolve an assignment of one value or of a tuple.
-         *
-         * @param command Assignment to resolve.
-         */
+        // Resolve an assignment of one value or of a tuple.
         void resolve_assignment(data::DataCommand &command);
 
-        /**
-         * Resolve an input or an output and its message.
-         *
-         * @param command Input or output to resolve.
-         */
+        // Resolve an input or an output and its message.
         void resolve_communication(data::DataCommand &command);
 
-        /**
-         * Resolve one guarded command.
-         *
-         * @param guard Guarded command to resolve.
-         */
+        // Resolve one guarded command.
         void resolve_guarded(data::DataGuardedCommand &guard);
 
-        /**
-         * Resolve a process name to its family.
-         *
-         * @param process Process name to resolve.
-         */
+        // Resolve a process name to its family.
         void resolve_process(data::DataProcessName &process);
 
-        /**
-         * Resolve an expression.
-         *
-         * @param expression Expression to resolve.
-         * @return Its type, None after an error.
-         */
+        // Resolve an expression.
         data::DataTypeBase resolve_expression(data::DataExpression &expression);
 
-        /**
-         * Resolve the target of an input or an assignment.
-         *
-         * @param expression Target to resolve.
-         * @return Its type, None after an error.
-         */
+        // Resolve the target of an input or an assignment.
         data::DataTypeBase resolve_target(data::DataExpression &expression);
 
-        /**
-         * Resolve the bounds of a range to constants.
-         *
-         * @param range Range to resolve.
-         * @return Whether both bounds are constant.
-         */
+        // Resolve the bounds of a range to constants.
         bool resolve_bounds(data::DataRange &range);
 
-        /**
-         * Compute an integer constant expression.
-         *
-         * @param expression Expression to compute.
-         * @return Its value, or nothing when it isn't constant.
-         */
+        // Compute an integer constant expression.
         std::optional<long long> fold(const data::DataExpression &expression) const;
 
-        /**
-         * Compute an integer constant expression, reporting when it isn't one.
-         *
-         * @param expression Expression to compute.
-         * @param what What the value is, for the message.
-         * @return Its value, or nothing after an error.
-         */
+        // Compute an integer constant expression, reporting when it isn't one.
         std::optional<long long> constant(const data::DataExpression &expression,
                                           std::string_view what);
 
-        /**
-         * Find or add the entry a family receives a message through.
-         *
-         * @param family Receiving family.
-         * @param command Input whose message is resolved.
-         * @return The entry.
-         */
+        // Find or add the entry a family receives a message through.
         data::DataEntry *add_entry(data::DataFamily &family, const data::DataCommand &command);
 
-        /**
-         * Find, for each output, the entry of the receiving family it goes through.
-         *
-         * An output no input matches gets a warning and an entry that is never accepted.
-         */
+        // Find, for each output, the entry of the receiving family it goes through.
         void match_outputs();
 
-        /**
-         * Find a name in the scopes, innermost first.
-         *
-         * @param name Name to find.
-         * @return Its symbol, or null.
-         */
+        // Find a name in the scopes, innermost first.
         data::DataSymbol *lookup(const std::string &name) const;
 
-        /**
-         * Create a symbol in the innermost scope.
-         *
-         * @param name Name of the symbol.
-         * @param kind What the name stands for.
-         * @param base Its type.
-         * @param location Position of its declaration.
-         * @return The symbol.
-         */
+        // Create a symbol in the innermost scope.
         data::DataSymbol *declare(const std::string &name, data::DataSymbolKind kind,
                                   data::DataTypeBase base, const data::DataLocation &location);
 
-        /**
-         * Report an unknown process name, with a hint for a near miss.
-         *
-         * @param process Process name that matches no family.
-         */
+        // Report an unknown process name, with a hint for a near miss.
         void report_unknown_process(const data::DataProcessName &process);
 
-        /**
-         * Check whether a value of one type can be stored in a variable of another.
-         *
-         * @param to Type of the variable.
-         * @param from Type of the value.
-         * @return Whether the types match, an integer going into a real.
-         */
+        // Check whether a value of one type can be stored in a variable of another.
         static bool assignable(data::DataTypeBase to, data::DataTypeBase from);
 
-        /** Destination of semantic errors and warnings. */
+        // Destination of semantic errors and warnings.
         DiagnosticsEngine &m_diagnostics;
 
-        /** Program being built. */
+        // Program being built.
         std::unique_ptr<data::DataProgram> m_program;
 
-        /** Scopes from the constants' outward to the innermost. */
+        // Scopes from the constants' outward to the innermost.
         std::vector<std::map<std::string, data::DataSymbol *>> m_scopes;
 
-        /** Macros by name. */
+        // Macros by name.
         std::map<std::string, data::DataDefinition *> m_macros;
 
-        /** Families by name. */
+        // Families by name.
         std::map<std::string, data::DataFamily *> m_families;
 
-        /** Family whose body is being resolved. */
+        // Family whose body is being resolved.
         data::DataFamily *m_family = nullptr;
 
-        /** Variant whose body is being resolved. */
+        // Variant whose body is being resolved.
         data::DataVariant *m_variant = nullptr;
 
-        /** Macros being expanded, innermost last, to catch recursion. */
+        // Macros being expanded, innermost last, to catch recursion.
         std::vector<std::string> m_expanding;
 
-        /** Outputs and their sending families, matched once every input is known. */
+        // Outputs and their sending families, matched once every input is known.
         std::vector<std::pair<data::DataCommand *, data::DataFamily *>> m_outputs;
     };
 

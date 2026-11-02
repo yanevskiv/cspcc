@@ -1,21 +1,4 @@
-/*
- * C++ header for deep copies of CSP syntax trees.
- *
- * Copyright (C) 2026 Ivan Janevski
- *
- * cspcc  is  free  software;  you  can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free  Software  Foundation;  either  version 3 of the License, or (at
- * your option) any later version.
- *
- * cspcc  is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS  FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
- *
- * You  should  have  received  a copy of the GNU General Public License
- * along with cspcc; if not, see <https://www.gnu.org/licenses/>.
- */
+// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
 
 #ifndef CSPCC_AST_CLONER_H
 #define CSPCC_AST_CLONER_H
@@ -28,63 +11,33 @@
 #include <memory>
 #include <vector>
 
-/** Namespace for cspcc declarations. */
+// Namespace for cspcc declarations.
 namespace cspcc
 {
-    /** Copies syntax trees, leaving out what sema fills in, for expanding macros. */
+    // Copies syntax trees, leaving out what sema fills in, for expanding macros.
     class AstCloner
     {
     public:
-        /**
-         * Copy an expression.
-         *
-         * @param expression Expression to copy, or null.
-         * @return The copy, or null.
-         */
+        // Copy an expression.
         static std::unique_ptr<data::DataExpression>
         clone_expression(const data::DataExpression *expression);
 
-        /**
-         * Copy a command.
-         *
-         * @param command Command to copy, or null.
-         * @return The copy, or null.
-         */
+        // Copy a command.
         static std::unique_ptr<data::DataCommand> clone_command(const data::DataCommand *command);
 
-        /**
-         * Copy a list of commands.
-         *
-         * @param commands Commands to copy.
-         * @return The copies.
-         */
+        // Copy a list of commands.
         static std::vector<std::unique_ptr<data::DataCommand>>
         clone_commands(const std::vector<std::unique_ptr<data::DataCommand>> &commands);
 
     private:
-        /**
-         * Copy a list of expressions.
-         *
-         * @param expressions Expressions to copy.
-         * @return The copies.
-         */
+        // Copy a list of expressions.
         static std::vector<std::unique_ptr<data::DataExpression>>
         clone_expressions(const std::vector<std::unique_ptr<data::DataExpression>> &expressions);
 
-        /**
-         * Copy a range.
-         *
-         * @param range Range to copy.
-         * @return The copy.
-         */
+        // Copy a range.
         static std::unique_ptr<data::DataRange> clone_range(const data::DataRange &range);
 
-        /**
-         * Copy a guarded command.
-         *
-         * @param guard Guarded command to copy.
-         * @return The copy.
-         */
+        // Copy a guarded command.
         static std::unique_ptr<data::DataGuardedCommand>
         clone_guarded(const data::DataGuardedCommand &guard);
     };
