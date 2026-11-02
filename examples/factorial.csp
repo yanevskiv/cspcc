@@ -1,0 +1,12 @@
+-- The slides' recursive factorial as a chain of processes, fac(1) to fac(LIMIT).
+-- USER asks fac(1) for N!, and the chain ends once USER does.
+
+const LIMIT = 10
+const N = 5
+
+[ fac(i:1..LIMIT):: *[ n: integer; fac(i - 1)?n →
+      [ n = 0 → fac(i - 1)!1
+      □ n > 0 → [ fac(i + 1)!n - 1; r: integer; fac(i + 1)?r; fac(i - 1)!(n * r) ] ] ]
+|| fac(0)::USER ]
+
+USER:: [ r: integer; fac(1)!N; fac(1)?r; print(r) ]

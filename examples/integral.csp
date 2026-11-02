@@ -1,0 +1,24 @@
+-- The slides' integral of f over XMIN..XMAX in N steps with a bag of tasks and n nodes.
+-- f(x) = x, so CALCULATE is exact. A node asks for a task until the bag answers stop().
+
+const n = 4
+const N = 100
+const XMIN = 0.0
+const XMAX = 1.0
+
+[ Node(p:1..n)::NODE || Bag::BAG ]
+
+NODE:: [ left, right, data: real; more: boolean; more := true;
+  *[ more → [ Bag!getTask();
+              [ Bag?getData(left, right) → [ CALCULATE; Bag!putResult(data) ]
+              □ Bag?stop() → more := false ] ] ] ]
+
+CALCULATE:: data := (right - left) * (left + right) / 2.0
+
+BAG:: [ dx, x, F, data: real; i, k: integer; INIT;
+  *[ k < N; (j:1..n) Node(j)?getTask() → [ Node(j)!getData(x, x + dx); x := x + dx; k := k + 1 ]
+   □ k = N; (j:1..n) Node(j)?getTask() → Node(j)!stop()
+   □ i < N; (j:1..n) Node(j)?putResult(data) → [ F := F + data; i := i + 1 ] ];
+  print(F) ]
+
+INIT:: [ F := 0.0; i := 0; k := 0; dx := (XMAX - XMIN) / N; x := XMIN ]

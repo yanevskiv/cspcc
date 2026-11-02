@@ -1,0 +1,18 @@
+-- The slides' bounded buffer of 10 portions between 5 producers and 6 consumers.
+-- Each producer makes 6 portions and each consumer takes 5, so every process ends.
+
+[ Producer(i:1..5)::PRODUCER || Consumer(i:1..6)::CONSUMER || Buffer::BUFFER ]
+
+BUFFER:: [ buffer: (0..9) integer; in, out: integer; in := 0; out := 0;
+  *[ in < out + 10; (i:1..5) Producer(i)?buffer(in mod 10) → in := in + 1
+   □ out < in; (i:1..6) Consumer(i)?more() →
+       [ Consumer(i)!buffer(out mod 10); out := out + 1 ] ] ]
+
+PRODUCER:: [ k: integer; k := 0;
+  *[ k < 6 → [ data: integer; PRODUCE; Buffer!data; k := k + 1 ] ] ]
+
+CONSUMER:: [ k: integer; k := 0;
+  *[ k < 5 → [ data: integer; Buffer!more(); Buffer?data; CONSUME; k := k + 1 ] ] ]
+
+PRODUCE:: data := i * 100 + k
+CONSUME:: consume(data)

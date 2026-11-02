@@ -1,0 +1,8 @@
+-- (Test) Source: examples/copy.csp
+-- (Test) Arguments: --delay=0
+-- (Test) Output:
+-- | east: print('h')
+-- | east: print('e')
+-- | east: print('l')
+-- | east: print('l')
+-- | east: print('o')

@@ -1,0 +1,5 @@
+-- (Test) Source: examples/factorial.csp
+-- (Test) Compiler flags: -DN=12 -DLIMIT=4
+-- (Test) Arguments: --delay=0
+-- (Test) Status: 1
+-- (Test) Error: no process fac(5)

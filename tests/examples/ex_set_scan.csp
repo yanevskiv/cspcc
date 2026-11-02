@@ -1,0 +1,7 @@
+-- (Test) Source: examples/set_scan.csp
+-- (Test) Arguments: --delay=0
+-- (Test) Output:
+-- | X: print(2, true)
+-- | X: print(7)
+-- | X: print(2)
+-- | X: print(9)

@@ -1,0 +1,14 @@
+-- The slides' set S of at most 100 integers, with insert(n) and has(n).
+
+S:: [ content: (0..99) integer; size: integer; size := 0; n: integer;
+  *[ X?has(n) → [ SEARCH; X!(i < size) ]
+   □ X?insert(n) → [ SEARCH;
+                     [ i < size → skip
+                     □ i = size; size < 100 → [ content(size) := n; size := size + 1 ] ] ] ] ]
+
+SEARCH:: [ i: integer; i := 0; *[ i < size; content(i) <> n → i := i + 1 ] ]
+
+X:: [ b: boolean;
+      S!insert(5); S!insert(3); S!insert(5); S!insert(8);
+      S!has(3); S?b; print(3, b);
+      S!has(4); S?b; print(4, b) ]

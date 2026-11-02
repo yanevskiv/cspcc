@@ -1,0 +1,3 @@
+-- (Test) Source: examples/philosophers.csp
+-- (Test) Arguments: --delay=2 --trace --timeout=2
+-- (Test) Check: philosophers

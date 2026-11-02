@@ -1,0 +1,8 @@
+#!/bin/sh
+# mutex - check that no two hooks named in $HOOK run at once, from --trace output.
+HOOK=${HOOK:-work()}
+awk -v hook="$HOOK" '
+    index($0, ": " hook " end") { inside--; next }
+    index($0, ": " hook) { inside++; runs++; if (inside > 1) { print "overlap: " $0; bad = 1 } }
+    END { if (runs == 0) { print "no " hook " ran"; exit 1 } exit bad }
+' "$1"

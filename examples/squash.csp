@@ -1,0 +1,10 @@
+-- X copies characters from west to east, turning each ** into ^.
+-- As on the slides, the last character isn't a star.
+
+west:: [ X!'a'; X!'*'; X!'*'; X!'b'; X!'*'; X!'c'; X!'*'; X!'*'; X!'*'; X!'*'; X!'d' ]
+X:: *[ c: character; west?c →
+         [ c <> '*' → east!c
+         □ c = '*' → [ west?c;
+                       [ c <> '*' → [ east!'*'; east!c ]
+                       □ c = '*' → east!'^' ] ] ] ]
+east:: *[ c: character; X?c → print(c) ]

@@ -1,0 +1,5 @@
+-- The slides' first program: X copies characters from west to east.
+
+west:: [ X!'h'; X!'e'; X!'l'; X!'l'; X!'o' ]
+X:: *[ c: character; west?c → east!c ]
+east:: *[ c: character; X?c → print(c) ]

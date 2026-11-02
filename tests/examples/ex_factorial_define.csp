@@ -1,0 +1,5 @@
+-- (Test) Source: examples/factorial.csp
+-- (Test) Compiler flags: -DN=10 -DLIMIT=11
+-- (Test) Arguments: --delay=0
+-- (Test) Output:
+-- | fac(0): print(3628800)

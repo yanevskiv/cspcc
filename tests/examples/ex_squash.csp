@@ -1,0 +1,11 @@
+-- (Test) Source: examples/squash.csp
+-- (Test) Arguments: --delay=0
+-- (Test) Output:
+-- | east: print('a')
+-- | east: print('^')
+-- | east: print('b')
+-- | east: print('*')
+-- | east: print('c')
+-- | east: print('^')
+-- | east: print('^')
+-- | east: print('d')
