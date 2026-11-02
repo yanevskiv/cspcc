@@ -1,4 +1,6 @@
-// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
+// The command-line options of cspcc.
+// Copyright (C) 2026 Ivan Janevski
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "options.h"
 
@@ -49,21 +51,54 @@ bool Options::parse(std::span<const char *const> args, std::string &error)
     return true;
 }
 
-// Print the options.
+// Print what cspcc does, its options, and how to build and run what it writes.
 void Options::print_help(std::ostream &stream, std::string_view program)
 {
-    stream << "Usage: " << program << " [options] INPUT\n"
-           << "  INPUT              a CSP program\n"
-           << "  -o OUTPUT          write the Ada main procedure to OUTPUT (default: INPUT's\n"
-           << "                     name with .adb, in the current directory)\n"
-           << "  -D NAME=VALUE      define the constant NAME, or override its const\n"
-           << "  --no-runtime       don't write csp_runtime.ads and csp_runtime.adb next to\n"
-           << "                     OUTPUT\n"
-           << "  --dump-tokens      print the tokens and stop\n"
-           << "  -w                 report no warnings\n"
-           << "  -Werror            report warnings as errors\n"
-           << "  -h, --help         show this help and exit\n"
-           << "  --version          show the version and exit\n";
+    stream
+        << "Usage: " << program << " [options] INPUT\n"
+        << "\n"
+        << "Translate INPUT, a program in Hoare's CSP (1978), into Ada. Each process\n"
+        << "becomes an Ada task. cspcc writes the main procedure (NAME.adb) and the\n"
+        << "runtime it uses (csp_runtime.ads and csp_runtime.adb) into the current\n"
+        << "directory; GNAT builds them into a program that runs the processes.\n"
+        << "\n"
+        << "Example:\n"
+        << "  cspcc philosophers.csp         writes philosophers.adb and the runtime\n"
+        << "  gnatmake philosophers.adb      builds ./philosophers\n"
+        << "  ./philosophers --timeout=2     runs it for two seconds\n"
+        << "\n"
+        << "Options:\n"
+        << "  -o FILE.adb      write the main procedure to FILE.adb, and the runtime next\n"
+        << "                   to it; FILE must be a lower-case Ada name, such as\n"
+        << "                   philosophers (default: INPUT's name in lower case,\n"
+        << "                   with _ for other characters)\n"
+        << "  -D NAME=VALUE    give the constant NAME the value VALUE, also when INPUT\n"
+        << "                   defines it with NAME :: 5 or const NAME = 5\n"
+        << "  --no-runtime     write only the main procedure, for when the runtime is\n"
+        << "                   already there\n"
+        << "  --dump-tokens    print INPUT's tokens, one per line with its position,\n"
+        << "                   and stop\n"
+        << "  -w               don't report warnings\n"
+        << "  -Werror          report warnings as errors\n"
+        << "  -h, --help       show this help\n"
+        << "  --version        show cspcc's version\n"
+        << "\n"
+        << "The translated program takes:\n"
+        << "  --trace          print every message as it passes between two processes\n"
+        << "  --quiet          don't print hooks\n"
+        << "  --delay=MS       pause each hook for up to MS milliseconds (default 10)\n"
+        << "  --seed=N         seed the random choices, to repeat a run\n"
+        << "  --timeout=S      stop after S seconds\n"
+        << "A hook is a command that nothing defines, such as EAT or work(): it prints\n"
+        << "the process and the command, then pauses for a moment.\n"
+        << "\n"
+        << "Exit status:\n"
+        << "  cspcc            0 when INPUT is translated, 1 on errors in INPUT, 2 on bad\n"
+        << "                   options\n"
+        << "  the program      0 when every process ends or at --timeout, 1 when a\n"
+        << "                   process fails (such as an alternative command with no\n"
+        << "                   true guard), 2 on bad options, 3 on a deadlock, after\n"
+        << "                   listing what each process waits for\n";
 }
 
 // Return the input.

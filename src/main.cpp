@@ -1,4 +1,6 @@
-// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
+// cspcc, a compiler from Hoare's CSP (1978) to Ada.
+// Copyright (C) 2026 Ivan Janevski
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "checker.h"
 #include "diagnostics.h"
@@ -80,7 +82,7 @@ int Driver::run()
         return 0;
     }
     if (m_options.input().empty()) {
-        Options::print_help(std::cerr, m_program);
+        std::cerr << "cspcc: no input; '" << m_program << " --help' shows how to use cspcc\n";
         return 2;
     }
     std::string source;
