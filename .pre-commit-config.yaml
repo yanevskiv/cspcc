@@ -1,0 +1,21 @@
+repos:
+  - repo: local
+    hooks:
+      - id: cspcc-style-contract
+        name: cspcc style contract
+        entry: python3 scripts/check_style.py
+        language: system
+        pass_filenames: false
+        files: ^(include/|src/|tests/unit/.*\.cpp$)
+      - id: clang-format
+        name: clang-format
+        entry: clang-format --dry-run --Werror
+        language: system
+        types_or: [c++, c]
+        files: ^(include/|src/|tests/unit/.*\.cpp$)
+      - id: clang-tidy-naming
+        name: clang-tidy naming
+        entry: scripts/check_clang_tidy.sh
+        language: system
+        pass_filenames: false
+        files: ^(include/|src/|tests/unit/.*\.cpp$)
