@@ -1,15 +1,3 @@
-<div align="center">
-
-![cspcc](docs/splash/cspcc.jpg)
-
-**cspcc: a compiler from Hoare's 1978 CSP to Ada, for running the programs of a concurrent programming course.**
-
-[![Language: C++20](https://img.shields.io/badge/Language-C%2B%2B20-blue)](src/)
-[![Output: Ada](https://img.shields.io/badge/Output-Ada%202022-green)](runtime/)
-[![License: GPLv3 or later](https://img.shields.io/badge/License-GPLv3%2B-blue)](LICENSE.md)
-
-</div>
-
 # cspcc (CSP compiler)
 
 **cspcc** translates programs written in Communicating Sequential Processes, the
@@ -40,17 +28,15 @@ gnatmake philosophers.adb
 
 ## Building
 
-Build on Linux with CMake 3.20, a C++20 compiler, and GNAT for running the
-translated programs. The unit tests fetch Catch2 3.8.1.
+Build on Linux with `g++` (C++20), `make`, and GNAT for running the
+translated programs.
 
 ```sh
-./do_build.sh       # build/out, installed into build/install
-./do_tests.sh       # unit tests and CSP tests through ctest
-./do_clean.sh
+make            # builds ./cspcc
+make test       # runs the CSP tests in tests/
+make examples   # translates and builds each program in examples/
+make clean
 ```
-
-`cmake --build build/out --target examples` translates and builds every
-program in [examples/](examples/) into `build/out/bin/`.
 
 ## Using cspcc
 
@@ -100,9 +86,6 @@ what each process waits for.
 | `*[ g1 → c1 □ g2 → c2 ]`, `*[ commands ]` | Repetitive command, and a loop without a guard |
 | `b; x: real; (i:1..n) X(i)?m → c` | A guard: conditions, declarations, ranges, and a last input |
 
-[docs/syntax.md](docs/syntax.md) has the grammar and how each construct
-becomes Ada, and the [checklist](CHECKLIST) lists what is supported.
-
 ## How the translation works
 
 Each family of processes becomes an Ada task type, and each kind of message a
@@ -121,9 +104,7 @@ watches for deadlocks.
 | --- | --- |
 | `include/cspcc/`, `src/cspcc/` | The compiler: lexer, parser, sema, Ada emitter and driver |
 | `include/cspcc/data/` | Tokens, the syntax tree and the checked program |
-| `runtime/` | The Ada runtime, embedded into cspcc at build time |
 | `examples/` | The slides' programs, made whole |
-| `tests/unit/` | Catch2 unit tests |
 | `tests/lang/`, `tests/errs/`, `tests/examples/` | CSP tests, their claims in `-- (Test)` lines read by `tests/run_test` |
 
 ## License
