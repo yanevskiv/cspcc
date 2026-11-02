@@ -37,7 +37,7 @@ private:
     // Translate the input, already read.
     int translate(const std::string &source);
 
-    // Write the Ada main procedure and, unless --no-runtime, the runtime next to it.
+    // Write the Ada main procedure and, unless -fno-runtime, the runtime next to it.
     int emit(Program &program);
 
     // Read a whole file.
@@ -131,7 +131,7 @@ int Driver::emit(Program &program)
     std::string unit = output.stem().string();
     if (output.extension() != ".adb" || !AdaWriter::valid_unit(unit)) {
         std::cerr << "cspcc: the output must be a lower-case Ada unit name ending in .adb, "
-                     "such as philosophers.adb, not '"
+                     "such as example.adb, not '"
                   << output.string() << "'\n";
         return 2;
     }

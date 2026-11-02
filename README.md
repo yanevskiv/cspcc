@@ -79,8 +79,8 @@ make clean      # removes build/
 cspcc [options] INPUT
   -o OUTPUT         the Ada main procedure, a lower-case name ending in .adb
   -D NAME=VALUE     define a constant, or override one
-  --no-runtime      don't write csp_runtime.ads and csp_runtime.adb
-  --dump-tokens     print the tokens and stop
+  -fno-runtime      don't write csp_runtime.ads and csp_runtime.adb
+  -fdump-tokens     print the tokens and stop
   -w, -Werror       no warnings, or warnings as errors
 ```
 

@@ -26,7 +26,7 @@ public:
     // Name a kind of token for diagnostics.
     static std::string_view kind_name(TokenKind kind);
 
-    // Print tokens one per line, for --dump-tokens.
+    // Print tokens one per line, for -fdump-tokens.
     static void dump(const std::vector<Token> &tokens, std::ostream &stream);
 
 private:

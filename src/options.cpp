@@ -13,9 +13,9 @@ bool Options::parse(std::span<const char *const> args, std::string &error)
             m_wants_help = true;
         } else if (arg == "--version") {
             m_wants_version = true;
-        } else if (arg == "--dump-tokens") {
+        } else if (arg == "-fdump-tokens") {
             m_dumps_tokens = true;
-        } else if (arg == "--no-runtime") {
+        } else if (arg == "-fno-runtime") {
             m_writes_runtime = false;
         } else if (arg == "-w") {
             m_warnings_enabled = false;
@@ -63,15 +63,15 @@ void Options::print_help(std::ostream &stream, std::string_view program)
         << "directory; GNAT builds them into a program that runs the processes.\n"
         << "\n"
         << "Example:\n"
-        << "  cspcc philosophers.csp         writes philosophers.adb and the runtime\n"
-        << "  gnatmake philosophers.adb      builds ./philosophers\n"
-        << "  ./philosophers --timeout=2     runs it for two seconds\n"
+        << "  cspcc example.csp              writes example.adb and the runtime\n"
+        << "  gnatmake example.adb           builds ./example\n"
+        << "  ./example --timeout=2          runs it for two seconds\n"
         << "\n"
         << "Options:\n"
         << "  -o FILE.adb      write the main procedure to FILE.adb (default: INPUT's name)\n"
         << "  -D NAME=VALUE    set the constant NAME, also over NAME :: 5 in INPUT\n"
-        << "  --no-runtime     write only the main procedure, not csp_runtime.ad[sb]\n"
-        << "  --dump-tokens    print INPUT's tokens with their positions, and stop\n"
+        << "  -fno-runtime     write only the main procedure, not csp_runtime.ad[sb]\n"
+        << "  -fdump-tokens    print INPUT's tokens with their positions, and stop\n"
         << "  -w               don't report warnings\n"
         << "  -Werror          report warnings as errors\n"
         << "  -h, --help       show this help\n"
@@ -85,15 +85,15 @@ void Options::print_help(std::ostream &stream, std::string_view program)
         << "  --timeout=S      stop after S seconds\n"
         << "\n"
         << "Exit status of cspcc:\n"
-        << "  0                INPUT was translated\n"
-        << "  1                INPUT has errors\n"
-        << "  2                bad options\n"
+        << "  Status 0         INPUT was translated\n"
+        << "  Status 1         INPUT has errors\n"
+        << "  Status 2         bad options\n"
         << "\n"
         << "Exit status of the translated program:\n"
-        << "  0                every process ended, or --timeout passed\n"
-        << "  1                a process failed, such as on a [ ... ] with no true guard\n"
-        << "  2                bad options\n"
-        << "  3                deadlock; it lists what each process waits for\n";
+        << "  Status 0         every process ended, or --timeout passed\n"
+        << "  Status 1         a process failed, such as on a [ ... ] with no true guard\n"
+        << "  Status 2         bad options\n"
+        << "  Status 3         deadlock; it lists what each process waits for\n";
 }
 
 // Return the input.
@@ -126,13 +126,13 @@ bool Options::wants_version() const
     return m_wants_version;
 }
 
-// Report --dump-tokens.
+// Report -fdump-tokens.
 bool Options::dumps_tokens() const
 {
     return m_dumps_tokens;
 }
 
-// Report whether --no-runtime was left out.
+// Report whether -fno-runtime was left out.
 bool Options::writes_runtime() const
 {
     return m_writes_runtime;
