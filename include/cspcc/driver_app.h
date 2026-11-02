@@ -20,9 +20,12 @@
 #ifndef CSPCC_DRIVER_APP_H
 #define CSPCC_DRIVER_APP_H
 
+#include "cspcc/data/data_program.h"
 #include "cspcc/driver_options.h"
 
+#include <filesystem>
 #include <string>
+#include <string_view>
 #include <vector>
 
 /** Namespace for cspcc declarations. */
@@ -57,6 +60,14 @@ namespace cspcc
         int translate(const std::string &source);
 
         /**
+         * Write the Ada main procedure and, unless --no-runtime, the runtime next to it.
+         *
+         * @param program Checked program.
+         * @return Exit status.
+         */
+        int emit(data::DataProgram &program);
+
+        /**
          * Read a whole file.
          *
          * @param path File to read.
@@ -64,6 +75,23 @@ namespace cspcc
          * @return Whether the file could be read.
          */
         static bool read_file(const std::string &path, std::string &text);
+
+        /**
+         * Write a file, leaving it untouched when it already holds the text.
+         *
+         * @param path File to write.
+         * @param text Contents.
+         * @return Whether the file holds the text afterwards.
+         */
+        static bool write_file(const std::filesystem::path &path, std::string_view text);
+
+        /**
+         * Spell a unit's file name as an Ada name.
+         *
+         * @param unit Lower-case unit name, such as dining_philosophers.
+         * @return Capitalized name, such as Dining_Philosophers.
+         */
+        static std::string ada_name(std::string_view unit);
 
         /** Name the program was run as. */
         std::string m_program;

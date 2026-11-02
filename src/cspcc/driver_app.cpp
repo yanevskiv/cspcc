@@ -21,11 +21,14 @@
 #include "cspcc/driver_app.h"
 #include "cspcc/ast_printer.h"
 #include "cspcc/diagnostics_engine.h"
+#include "cspcc/emit_ada_writer.h"
+#include "cspcc/emit_runtime.h"
 #include "cspcc/lexer_tokenizer.h"
 #include "cspcc/parser_grammar.h"
 #include "cspcc/sema_checker.h"
 
-// Standard headers for files and streams.
+// Standard headers for files, streams and names.
+#include <cctype>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -98,7 +101,39 @@ namespace cspcc
         if (!program) {
             return 1;
         }
-        return diagnostics.error_count() ? 1 : 0;
+        return emit(*program);
+    }
+
+    // Name the output after the input unless -o names it, then write the files.
+    int DriverApp::emit(data::DataProgram &program)
+    {
+        std::filesystem::path input(m_options.input());
+        std::filesystem::path output(m_options.output());
+        if (output.empty()) {
+            output = EmitAdaWriter::unit_from(input.stem().string()) + ".adb";
+        }
+        std::string unit = output.stem().string();
+        if (output.extension() != ".adb" || !EmitAdaWriter::valid_unit(unit)) {
+            std::cerr << "cspcc: the output must be a lower-case Ada unit name ending in .adb, "
+                         "such as philosophers.adb, not '"
+                      << output.string() << "'\n";
+            return 2;
+        }
+        EmitAdaWriter writer(program, ada_name(unit), input.filename().string());
+        if (!write_file(output, writer.write())) {
+            std::cerr << "cspcc: can't write '" << output.string() << "'\n";
+            return 1;
+        }
+        if (!m_options.writes_runtime()) {
+            return 0;
+        }
+        std::filesystem::path directory = output.parent_path();
+        if (!write_file(directory / "csp_runtime.ads", EmitRuntime::spec()) ||
+            !write_file(directory / "csp_runtime.adb", EmitRuntime::body())) {
+            std::cerr << "cspcc: can't write the runtime next to '" << output.string() << "'\n";
+            return 1;
+        }
+        return 0;
     }
 
     // Read a whole file.
@@ -112,6 +147,30 @@ namespace cspcc
         buffer << file.rdbuf();
         text = buffer.str();
         return true;
+    }
+
+    // Write a file unless it already holds the text, so gnatmake keeps its objects.
+    bool DriverApp::write_file(const std::filesystem::path &path, std::string_view text)
+    {
+        std::string old;
+        if (read_file(path.string(), old) && old == text) {
+            return true;
+        }
+        std::ofstream file(path, std::ios::binary);
+        file << text;
+        return static_cast<bool>(file);
+    }
+
+    // Capitalize the first letter and each letter after an underscore.
+    std::string DriverApp::ada_name(std::string_view unit)
+    {
+        std::string name(unit);
+        for (size_t i = 0; i < name.size(); i++) {
+            if (i == 0 || name[i - 1] == '_') {
+                name[i] = static_cast<char>(std::toupper(static_cast<unsigned char>(name[i])));
+            }
+        }
+        return name;
     }
 
 }
