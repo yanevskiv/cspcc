@@ -1,4 +1,6 @@
-// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
+// The syntax tree of a CSP program, as the parser builds it.
+// Copyright (C) 2026 Ivan Janevski
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef CSPCC_AST_H
 #define CSPCC_AST_H

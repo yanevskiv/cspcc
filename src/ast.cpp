@@ -1,4 +1,6 @@
-// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
+// Copies of syntax trees.
+// Copyright (C) 2026 Ivan Janevski
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "ast.h"
 

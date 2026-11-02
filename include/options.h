@@ -1,4 +1,6 @@
-// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
+// The command-line options of cspcc.
+// Copyright (C) 2026 Ivan Janevski
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef CSPCC_OPTIONS_H
 #define CSPCC_OPTIONS_H

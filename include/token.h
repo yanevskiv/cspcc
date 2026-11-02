@@ -1,4 +1,6 @@
-// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
+// Tokens and their positions in a CSP source.
+// Copyright (C) 2026 Ivan Janevski
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef CSPCC_TOKEN_H
 #define CSPCC_TOKEN_H

@@ -1,4 +1,6 @@
-// (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
+// A checked program: its processes, symbols and messages.
+// Copyright (C) 2026 Ivan Janevski
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef CSPCC_PROGRAM_H
 #define CSPCC_PROGRAM_H
