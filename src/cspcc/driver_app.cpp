@@ -33,6 +33,9 @@
 #include <iostream>
 #include <sstream>
 
+// Version of cspcc.
+#define CSPCC_VERSION "0.2.0"
+
 // Namespace for the cspcc driver.
 namespace cspcc
 {

@@ -18,8 +18,8 @@ set -u
 
 PROG=$(basename "$0")
 HERE=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-CSPCC=${CSPCC:-$HERE/build/out/bin/cspcc}
-TEST_DIR=${CSPCC_TEST_DIR:-$HERE/build/csp-tests}
+CSPCC=${CSPCC:-$HERE/cspcc}
+TEST_DIR=${CSPCC_TEST_DIR:-$HERE/obj/tests}
 TIMEOUT=30
 HEAD_LINES=20
 SOURCE=${1:-}

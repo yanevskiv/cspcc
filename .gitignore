@@ -1,4 +1,5 @@
-/build/
-*.o
-*.ali
-b~*
+obj/*
+!obj/.gitkeep
+/cspcc
+examples/*
+!examples/*.csp
