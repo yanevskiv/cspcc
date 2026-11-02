@@ -51,11 +51,12 @@ namespace cspcc
          *
          * @param family Family the variant belongs to, its Ada names already given.
          * @param variant Variant to write.
-         * @param names Names taken at the level of the main procedure and the task type.
+         * @param names Names taken in the task body so far, which the writer adds to, since
+         *              loop names must be distinct across a whole body.
          * @param source Name of the CSP file, for locations in messages.
          */
         EmitProcessWriter(const data::DataFamily &family, const data::DataVariant &variant,
-                          const EmitNameTable &names, std::string source);
+                          EmitNameTable &names, std::string source);
 
         /**
          * Write the variant as a declare block.
@@ -193,8 +194,8 @@ namespace cspcc
         /** Variant being written. */
         const data::DataVariant &m_variant;
 
-        /** Names taken so far, the block's included. */
-        EmitNameTable m_names;
+        /** Names taken in the task body, the block's included. */
+        EmitNameTable &m_names;
 
         /** Name of the CSP file. */
         std::string m_source;

@@ -53,10 +53,10 @@ namespace cspcc
 
     }
 
-    // Copy the names taken outside the block and take the block's fixed ones.
+    // Keep the task body's names and the source's name.
     EmitProcessWriter::EmitProcessWriter(const data::DataFamily &family,
-                                         const data::DataVariant &variant,
-                                         const EmitNameTable &names, std::string source)
+                                         const data::DataVariant &variant, EmitNameTable &names,
+                                         std::string source)
         : m_family(family)
         , m_variant(variant)
         , m_names(names)
@@ -381,8 +381,8 @@ namespace cspcc
             }
         };
         auto wait = [&]() {
-            line("R.Waiting (Id, \"alternative command at " +
-                 location(command.m_location) + "\");");
+            line("R.Waiting (Id, \"alternative command at " + location(command.m_location) +
+                 "\");");
             line("loop");
             m_indent++;
             line("select");
