@@ -135,11 +135,11 @@ namespace cspcc
             case data::DataTokenKind::Assign:
                 return "':='";
             case data::DataTokenKind::Parallel:
-                return "'||'";
+                return "'‖' or '||'";
             case data::DataTokenKind::Box:
-                return "'□'";
+                return "'□' or '[]'";
             case data::DataTokenKind::Arrow:
-                return "'→'";
+                return "'→' or '->'";
             case data::DataTokenKind::Bang:
                 return "'!'";
             case data::DataTokenKind::Question:

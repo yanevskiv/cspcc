@@ -96,7 +96,7 @@ what each process waits for.
 | `X!e`, `X(i)?v` | Output and input of a value |
 | `S!insert(n)`, `S?has(n)`, `sem!P()` | Messages with a constructor, and signals |
 | `X!(a, b)`, `X?(x, y)` | Tuples |
-| `[ g1 → c1 □ g2 → c2 ]` | Alternative command |
+| `[ g1 → c1 □ g2 → c2 ]`, `[ g1 -> c1 [] g2 -> c2 ]` | Alternative command, with `□`, `[]` or `\|` between guarded commands |
 | `*[ g1 → c1 □ g2 → c2 ]`, `*[ commands ]` | Repetitive command, and a loop without a guard |
 | `b; x: real; (i:1..n) X(i)?m → c` | A guard: conditions, declarations, ranges, and a last input |
 
