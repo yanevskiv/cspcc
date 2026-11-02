@@ -56,6 +56,8 @@ std::unique_ptr<Ast> Parser::parse_program()
         while (!is(TokenKind::Eof)) {
             if (is(TokenKind::Const)) {
                 parse_constant(*ast);
+            } else if (starts_named_constant(0)) {
+                parse_named_constant(*ast);
             } else if (is(TokenKind::LeftBracket)) {
                 if (bracket_shape(0) != BracketShape::Parallel) {
                     fail(peek().m_location, "ERR_PARSE_TOP_LEVEL",
@@ -181,6 +183,19 @@ BracketShape Parser::bracket_shape(size_t ahead) const
     return BracketShape::Block;
 }
 
+// Check whether NAME :: starts a constant, its value a literal.
+bool Parser::starts_named_constant(size_t ahead) const
+{
+    using Kind = TokenKind;
+    if (!is(Kind::Identifier, ahead) || !is(Kind::ColonColon, ahead + 1)) {
+        return false;
+    }
+    Kind kind = peek(ahead + 2).m_kind;
+    return kind == Kind::Integer || kind == Kind::Real || kind == Kind::Character ||
+           kind == Kind::True || kind == Kind::False ||
+           (kind == Kind::Minus && (is(Kind::Integer, ahead + 3) || is(Kind::Real, ahead + 3)));
+}
+
 // Check for NAME:: or NAME(...)::.
 bool Parser::starts_definition(size_t ahead) const
 {
@@ -251,6 +266,19 @@ void Parser::parse_constant(Ast &ast)
     ast.m_constants.push_back(std::move(constant));
 }
 
+// Parse NAME :: value, a constant as the notes write it.
+void Parser::parse_named_constant(Ast &ast)
+{
+    auto constant = std::make_unique<ConstantDefinition>();
+    const Token &name = next();
+    constant->m_name = name.m_text;
+    constant->m_location = name.m_location;
+    next();
+    constant->m_value = parse_expression();
+    accept(TokenKind::Semicolon);
+    ast.m_constants.push_back(std::move(constant));
+}
+
 // Parse [ definition || definition ... ].
 void Parser::parse_parallel(Ast &ast)
 {
@@ -266,6 +294,14 @@ void Parser::parse_parallel(Ast &ast)
 std::unique_ptr<Definition> Parser::parse_definition(bool inParallel)
 {
     auto definition = std::make_unique<Definition>();
+    std::vector<std::unique_ptr<Range>> prefix;
+    while (inParallel && starts_range_prefix(0)) {
+        next();
+        do {
+            prefix.push_back(parse_range());
+        } while (accept(TokenKind::Comma));
+        expect(TokenKind::RightParen, "a range");
+    }
     const Token &name = expect(TokenKind::Identifier, "a process label");
     definition->m_name = name.m_text;
     definition->m_location = name.m_location;
@@ -276,6 +312,27 @@ std::unique_ptr<Definition> Parser::parse_definition(bool inParallel)
             definition->m_subscripts.push_back(parse_label_subscript());
         } while (accept(TokenKind::Comma));
         expect(TokenKind::RightParen, "a process label");
+    }
+    for (LabelSubscript &subscript : definition->m_subscripts) {
+        Expression *value = subscript.m_value.get();
+        if (!value || value->m_kind != ExpressionKind::Name) {
+            continue;
+        }
+        for (std::unique_ptr<Range> &range : prefix) {
+            if (range && range->m_variable == value->m_name) {
+                subscript.m_range = std::move(range);
+                subscript.m_value.reset();
+                break;
+            }
+        }
+    }
+    for (std::unique_ptr<Range> &range : prefix) {
+        if (range) {
+            fail(range->m_location, "ERR_PARSE_UNUSED_RANGE",
+                 "the label doesn't use '" + range->m_variable + "', as in (" +
+                     range->m_variable + ":1..N) " + definition->m_name + "(" +
+                     range->m_variable + ")");
+        }
     }
     expect(TokenKind::ColonColon, "a process label");
     definition->m_body = parse_commands(inParallel ? ListContext::Element : ListContext::TopLevel);
@@ -290,6 +347,15 @@ LabelSubscript Parser::parse_label_subscript()
         subscript.m_range = parse_range();
     } else {
         subscript.m_value = parse_expression();
+        if (is(TokenKind::DotDot)) {
+            auto range = std::make_unique<Range>();
+            range->m_variable = "_" + std::to_string(++m_anonymous);
+            range->m_location = subscript.m_value->m_location;
+            range->m_low = std::move(subscript.m_value);
+            next();
+            range->m_high = parse_expression();
+            subscript.m_range = std::move(range);
+        }
     }
     return subscript;
 }

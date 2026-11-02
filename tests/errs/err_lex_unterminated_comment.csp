@@ -1,0 +1,4 @@
+-- (Test) Compiler error: [ERR_LEX_UNTERMINATED]
+-- A /* comment ends with */.
+
+X :: skip /* never closed

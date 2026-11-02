@@ -414,7 +414,7 @@ void Checker::resolve_command(Command &command)
 // Declare variables of a scalar or array type; an unknown type is taken as integer.
 void Checker::resolve_declaration(Command &command)
 {
-    std::optional<BaseType> base = base_of(command.m_type.m_name);
+    std::optional<BaseType> base = base_of(lower(command.m_type.m_name));
     if (!base) {
         m_diagnostics.warning(command.m_type.m_location, "WARN_SEMA_UNKNOWN_TYPE",
                               "'" + command.m_type.m_name +

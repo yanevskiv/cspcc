@@ -1,0 +1,4 @@
+-- (Test) Compiler error: [ERR_PARSE_UNUSED_RANGE]
+-- A range before a label names a subscript of the label.
+
+[ (i:1..3) Worker(j) :: skip || Boss :: skip ]

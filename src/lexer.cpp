@@ -466,9 +466,22 @@ void Lexer::scan_punctuation(const Location &location)
     advance();
 }
 
-// Skip a -- or // comment up to the end of its line.
+// Skip a -- or // comment up to the end of its line, or a /* ... */ comment.
 bool Lexer::skip_comment()
 {
+    if (peek() == '/' && peek(1) == '*') {
+        Location location = here();
+        advance(2);
+        while (peek() && !(peek() == '*' && peek(1) == '/')) {
+            advance();
+        }
+        if (!peek()) {
+            m_diagnostics.error(location, "ERR_LEX_UNTERMINATED", "a /* comment with no */");
+            return true;
+        }
+        advance(2);
+        return true;
+    }
     bool dashes = peek() == '-' && peek(1) == '-';
     bool slashes = peek() == '/' && peek(1) == '/';
     if (!dashes && !slashes) {

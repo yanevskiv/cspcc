@@ -54,6 +54,9 @@ private:
     // Check whether a label and '::' start at a token.
     bool starts_definition(size_t ahead) const;
 
+    // Check whether NAME :: starts a constant, its value a literal.
+    bool starts_named_constant(size_t ahead) const;
+
     // Check whether an input or an output starts at a token.
     bool starts_communication(size_t ahead, TokenKind &kind) const;
 
@@ -65,6 +68,9 @@ private:
 
     // Parse const NAME = value.
     void parse_constant(Ast &ast);
+
+    // Parse NAME :: value, a constant as the notes write it.
+    void parse_named_constant(Ast &ast);
 
     // Parse a parallel command, [ A::... || B(i:1..n)::... ].
     void parse_parallel(Ast &ast);
@@ -148,6 +154,9 @@ private:
 
     // Index of the current token.
     size_t m_position = 0;
+
+    // Count of label ranges written without a variable, as in Producer(1..N).
+    int m_anonymous = 0;
 };
 
 #endif
