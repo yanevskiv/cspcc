@@ -1,0 +1,4 @@
+-- (Test) Compiler error: [ERR_SEMA_NOT_CONSTANT]
+-- A range's bounds are constants, so its processes and alternatives are known.
+
+[ fac(i:1..LIMIT):: skip ]

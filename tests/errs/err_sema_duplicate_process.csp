@@ -1,0 +1,4 @@
+-- (Test) Compiler error: [ERR_SEMA_DUPLICATE_PROCESS]
+-- Each process is defined once.
+
+[ S(i:0..3):: skip || S(i:3..5):: skip ]

@@ -1,0 +1,4 @@
+-- (Test) Compiler error: [ERR_LEX_BAD_CHAR]
+-- A Cyrillic letter that looks Latin, as in the slides' console(ј-1).
+
+X:: console(ј - 1)!'A'

@@ -1,0 +1,8 @@
+-- (Test) Arguments: --delay=0
+-- (Test) Output:
+-- | X: print(true)
+-- When several boolean guards are true one is chosen at random, so in 200 runs each is chosen.
+
+X:: [ a, b, k: integer; a := 0; b := 0; k := 0;
+      *[ k < 200 -> [ [ true -> a := a + 1 [] true -> b := b + 1 ]; k := k + 1 ] ];
+      print(a > 0 and b > 0) ]

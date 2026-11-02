@@ -1,0 +1,9 @@
+-- (Test) Arguments: --delay=0
+-- (Test) Output:
+-- | X: print(2, 3)
+-- A macro's body replaces each use; a body in brackets is spliced, so its names stay visible.
+
+X:: [ content: (0..9) integer; size, n: integer;
+      content(0) := 7; content(1) := 5; content(2) := 9; size := 3;
+      n := 9; SEARCH; print(i, size) ]
+SEARCH:: [ i: integer; i := 0; *[ i < size; content(i) <> n -> i := i + 1 ] ]

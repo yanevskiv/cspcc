@@ -1,0 +1,133 @@
+#!/bin/sh
+#
+# run_test - translate one CSP test, build it with GNAT, run it and check its claims.
+#
+# A test states its claims in `-- (Test) Key: value` lines among its first lines:
+#   Source:            the program to test, relative to the repository, instead of this file
+#   Compiler flags:    options for cspcc, such as -DN=3
+#   Compiler error:    codes cspcc must report, such as [ERR_SEMA_UNKNOWN_PROCESS]
+#   Compiler warning:  codes cspcc must warn with
+#   Arguments:         options for the program, such as --trace --delay=0
+#   Status:            the program's exit status (default 0)
+#   Output:            the exact output, as `-- | ` lines below the key
+#   Sorted output:     the output in any order, as `-- | ` lines below the key
+#   Error:             text the program's standard error must hold
+#   Check:             a script in tests/checks that reads the output and judges it
+
+set -u
+
+PROG=$(basename "$0")
+HERE=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+CSPCC=${CSPCC:-$HERE/build/out/bin/cspcc}
+TEST_DIR=${CSPCC_TEST_DIR:-$HERE/build/csp-tests}
+TIMEOUT=30
+HEAD_LINES=20
+SOURCE=${1:-}
+
+# Report a problem with the run itself and exit.
+error()
+{
+    printf '%s: %s\n' "$PROG" "$*" >&2
+    exit 2
+}
+
+# Report a passing test and exit.
+pass()
+{
+    printf '\033[32mPASS\033[0m: %s\n' "$SOURCE"
+    exit 0
+}
+
+# Report a failing test and exit.
+fail()
+{
+    printf '\033[31mFAIL\033[0m: %s\n' "$SOURCE"
+    { printf "$@"; printf '\n'; } | sed 's/^/    /'
+    exit 1
+}
+
+# Echo the value of a `-- (Test) <key>:` line.
+get_line()
+{
+    head -n "$HEAD_LINES" "$SOURCE" \
+        | sed -n "s@^-- (Test) $1:[[:space:]]*@@p" \
+        | sed 's/[[:space:]]*$//' \
+        | head -n 1
+}
+
+# Echo the `-- | ` lines under a `-- (Test) <key>:` line.
+get_text()
+{
+    sed -n "/^-- (Test) $1:\$/,\$p" "$SOURCE" \
+        | tail -n +2 \
+        | sed -nE '/^-- \|( |$)/!q; s///; p'
+}
+
+# Check whether a `-- (Test) <key>:` line exists.
+has_key()
+{
+    head -n "$HEAD_LINES" "$SOURCE" | grep -q "^-- (Test) $1:"
+}
+
+[ -n "$SOURCE" ] || error "usage: $PROG TEST.csp"
+[ -f "$SOURCE" ] || error "no test '$SOURCE'"
+[ -x "$CSPCC" ] || error "no cspcc at '$CSPCC'; build it first"
+
+PROGRAM=$SOURCE
+if [ -n "$(get_line Source)" ]; then
+    PROGRAM=$HERE/$(get_line Source)
+fi
+NAME=$(basename "$SOURCE" .csp)
+UNIT=t_$(printf '%s' "$NAME" | tr 'A-Z-' 'a-z_')
+RUN=$TEST_DIR/$(basename "$(dirname "$SOURCE")")/$NAME
+mkdir -p "$RUN" || error "can't make '$RUN'"
+
+FLAGS=$(get_line 'Compiler flags')
+timeout "$TIMEOUT" "$CSPCC" $FLAGS -o "$RUN/$UNIT.adb" "$PROGRAM" >"$RUN/compiler_output" 2>"$RUN/compiler_error"
+STATUS=$?
+[ "$STATUS" -le 128 ] || fail 'cspcc died from signal %s' "$((STATUS - 128))"
+
+if has_key 'Compiler error'; then
+    [ "$STATUS" -ne 0 ] || fail 'cspcc accepted the program; expected %s' "$(get_line 'Compiler error')"
+    for CODE in $(get_line 'Compiler error'); do
+        grep -qF "$CODE" "$RUN/compiler_error" || fail 'cspcc did not report %s:\n%s' "$CODE" "$(cat "$RUN/compiler_error")"
+    done
+    pass
+fi
+[ "$STATUS" -eq 0 ] || fail 'cspcc failed:\n%s' "$(cat "$RUN/compiler_error")"
+for CODE in $(get_line 'Compiler warning'); do
+    grep -qF "$CODE" "$RUN/compiler_error" || fail 'cspcc did not warn with %s:\n%s' "$CODE" "$(cat "$RUN/compiler_error")"
+done
+
+(cd "$RUN" && gnatmake -q -gnat2022 "$UNIT.adb") >"$RUN/build_output" 2>&1 \
+    || fail 'gnatmake failed:\n%s' "$(grep -v warning "$RUN/build_output" | head -n 20)"
+
+ARGS=$(get_line Arguments)
+timeout "$TIMEOUT" "$RUN/$UNIT" $ARGS >"$RUN/output" 2>"$RUN/error"
+STATUS=$?
+[ "$STATUS" -ne 124 ] || fail 'the program timed out after %ss' "$TIMEOUT"
+
+EXPECTED_STATUS=$(get_line Status)
+[ "$STATUS" -eq "${EXPECTED_STATUS:-0}" ] \
+    || fail 'status %s, expected %s:\n%s' "$STATUS" "${EXPECTED_STATUS:-0}" "$(head -n 10 "$RUN/error")"
+
+if has_key Output; then
+    get_text Output >"$RUN/expected_output"
+    cmp -s "$RUN/expected_output" "$RUN/output" \
+        || fail 'output differs:\n%s' "$(diff "$RUN/expected_output" "$RUN/output" | head -n 20)"
+fi
+if has_key 'Sorted output'; then
+    get_text 'Sorted output' | sort >"$RUN/expected_output"
+    sort "$RUN/output" >"$RUN/sorted_output"
+    cmp -s "$RUN/expected_output" "$RUN/sorted_output" \
+        || fail 'sorted output differs:\n%s' "$(diff "$RUN/expected_output" "$RUN/sorted_output" | head -n 20)"
+fi
+if has_key Error; then
+    grep -qF "$(get_line Error)" "$RUN/error" || fail 'standard error lacks "%s":\n%s' "$(get_line Error)" "$(head -n 10 "$RUN/error")"
+fi
+if has_key Check; then
+    CHECK=$HERE/tests/checks/$(get_line Check)
+    [ -x "$CHECK" ] || error "no check '$CHECK'"
+    VERDICT=$("$CHECK" "$RUN/output" 2>&1) || fail 'check %s failed:\n%s' "$(get_line Check)" "$VERDICT"
+fi
+pass

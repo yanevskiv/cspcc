@@ -1,0 +1,9 @@
+-- (Test) Arguments: --delay=0
+-- (Test) Output:
+-- | S: print(4)
+-- A process family can have two subscripts and several definitions.
+
+[ M(i:1..2, 0):: M(i, 1)!i
+|| M(i:1..2, j:1..2):: [ x: integer; M(i, j - 1)?x; M(i, j + 1)!x ]
+|| M(i:1..2, 3):: [ x: integer; M(i, 2)?x; S!x ]
+|| S:: [ a, b: integer; M(1, 3)?a; M(2, 3)?b; print(a + a + b) ] ]

@@ -1,0 +1,4 @@
+-- (Test) Compiler error: [ERR_LEX_STRING]
+-- Only a one-character string is a value.
+
+X:: Y!"AB"

@@ -1,0 +1,7 @@
+-- (Test) Arguments: --delay=0
+-- (Test) Output:
+-- | X: print('*', true, false, true, true)
+-- Characters, booleans, comparisons and the logical operators.
+
+X:: [ c: character; b: boolean; c := '*'; b := c = '*';
+      print(c, b, not b, c < 'a' and b, false or c <> 'x') ]

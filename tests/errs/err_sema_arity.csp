@@ -1,0 +1,4 @@
+-- (Test) Compiler error: [ERR_SEMA_ARITY]
+-- The definitions of a family have the same number of subscripts.
+
+[ M(i:1..2):: skip || M(0, 0):: skip ]

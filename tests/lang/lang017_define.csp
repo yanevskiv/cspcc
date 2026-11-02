@@ -1,0 +1,9 @@
+-- (Test) Compiler flags: -DN=4 -DM=2
+-- (Test) Arguments: --delay=0
+-- (Test) Output:
+-- | X: print(4, 2, 6)
+-- A -D overrides a const, or adds a constant of its own.
+
+const N = 1
+const K = N + M
+X:: print(N, M, K)

@@ -1,0 +1,5 @@
+-- (Test) Compiler error: [ERR_SEMA_NO_MATCHING_INPUT]
+-- An output needs an input of the same constructor and types in its receiver.
+
+A:: B!has(1)
+B:: [ c: character; A?has(c) ]

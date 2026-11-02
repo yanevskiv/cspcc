@@ -1,0 +1,6 @@
+-- (Test) Arguments: --delay=0
+-- (Test) Status: 1
+-- (Test) Error: no guard of the alternative command
+-- An alternative command whose guards are all false fails, and so does the program.
+
+X:: [ n: integer; n := 1; [ n = 0 -> skip ] ]

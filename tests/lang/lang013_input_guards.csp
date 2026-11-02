@@ -1,0 +1,11 @@
+-- (Test) Arguments: --delay=0
+-- (Test) Sorted output:
+-- | Y: from_a(1)
+-- | Y: from_a(2)
+-- | Y: from_b(10)
+-- | Y: from_b(20)
+-- An alternative of input guards takes whichever sender is ready.
+
+A:: [ Y!1; Y!2 ]
+B:: [ Y!10; Y!20 ]
+Y:: *[ n: integer; A?n -> from_a(n) [] n: integer; B?n -> from_b(n) ]

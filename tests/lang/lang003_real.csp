@@ -1,0 +1,6 @@
+-- (Test) Arguments: --delay=0
+-- (Test) Output:
+-- | X: print(2.5, 1.0, 0.75, true)
+-- Reals, and integers turned into reals where a real is needed.
+
+X:: [ x, y: real; x := 2.5; y := 1; print(x, y, 3 / 4.0, x > 2) ]

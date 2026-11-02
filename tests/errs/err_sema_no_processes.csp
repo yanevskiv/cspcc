@@ -1,0 +1,4 @@
+-- (Test) Compiler error: [ERR_SEMA_NO_PROCESSES]
+-- A program of macros alone has no processes.
+
+const N = 1

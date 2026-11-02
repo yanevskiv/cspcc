@@ -1,0 +1,8 @@
+-- (Test) Arguments: --delay=0
+-- (Test) Output:
+-- | S: print(60)
+-- A range before a guard repeats it for every process of an array.
+
+const N = 3
+[ X(i:1..N):: S!value(i * 10) || S:: [ sum, n: integer; sum := 0;
+    *[ (i:1..N) X(i)?value(n) -> sum := sum + n ]; print(sum) ] ]

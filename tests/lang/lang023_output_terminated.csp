@@ -1,0 +1,7 @@
+-- (Test) Arguments: --delay=0
+-- (Test) Status: 1
+-- (Test) Error: output to terminated process B
+-- An output to a process that has terminated fails.
+
+A:: [ B!1; B!2 ]
+B:: [ n: integer; A?n ]

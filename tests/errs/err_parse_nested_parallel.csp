@@ -1,0 +1,4 @@
+-- (Test) Compiler error: [ERR_PARSE_NESTED_PARALLEL]
+-- A parallel command only stands at the top level.
+
+X:: [ a::skip || b::skip ]
