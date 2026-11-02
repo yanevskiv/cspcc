@@ -96,11 +96,11 @@ TEST_CASE("Sema expands macros and keeps hooks", "[unit][sema_checker]")
 }
 
 // Verify the hints for the slides' typos and mismatched messages.
-TEST_CASE("Sema reports unknown processes and unmatched outputs", "[unit][sema_checker]")
+TEST_CASE("Sema reports unknown processes and warns of unmatched outputs", "[unit][sema_checker]")
 {
     Checked unknown = check("[ Fork(i:0..1)::skip || P::fork(0)!in() ]");
     CHECK(unknown.m_messages.find("ERR_SEMA_UNKNOWN_PROCESS") != std::string::npos);
     CHECK(unknown.m_messages.find("did you mean 'Fork'?") != std::string::npos);
     Checked unmatched = check("[ A::B!has(1) || B::[ c: character; A?has(c) ] ]");
-    CHECK(unmatched.m_messages.find("ERR_SEMA_NO_MATCHING_INPUT") != std::string::npos);
+    CHECK(unmatched.m_messages.find("WARN_SEMA_NO_MATCHING_INPUT") != std::string::npos);
 }

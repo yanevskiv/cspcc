@@ -1,5 +1,9 @@
--- (Test) Compiler error: [ERR_SEMA_NO_MATCHING_INPUT]
--- An output needs an input of the same constructor and types in its receiver.
+-- (Test) Compiler warning: [WARN_SEMA_NO_MATCHING_INPUT]
+-- (Test) Arguments: --delay=0
+-- (Test) Status: 3
+-- (Test) Error: csp: deadlock
+-- An output no input of its receiver matches is only a warning, since it may never run;
+-- when it runs, it waits forever.
 
 A:: B!has(1)
 B:: [ c: character; A?has(c) ]

@@ -877,7 +877,8 @@ namespace cspcc
         return entry;
     }
 
-    // Match each output with an entry of its receiver: the same types, or integers into reals.
+    // Match each output with an entry of its receiver, the same types or integers into reals,
+    // or warn and give the receiver an entry it never accepts.
     void SemaChecker::match_outputs()
     {
         for (auto [command, sender] : m_outputs) {
@@ -909,10 +910,11 @@ namespace cspcc
             if (command->m_entry) {
                 continue;
             }
-            m_diagnostics.error(
-                command->m_location, "ERR_SEMA_NO_MATCHING_INPUT",
+            m_diagnostics.warning(
+                command->m_location, "WARN_SEMA_NO_MATCHING_INPUT",
                 "no input of '" + receiver.m_name + "' receives " +
-                    message_text(command->m_constructor, command->m_anonymous, types));
+                    message_text(command->m_constructor, command->m_anonymous, types) +
+                    ", so the output would wait forever");
             std::string receives;
             for (const std::unique_ptr<data::DataEntry> &entry : receiver.m_entries) {
                 receives += (receives.empty() ? "" : ", ") +
@@ -920,6 +922,7 @@ namespace cspcc
             }
             m_diagnostics.note(receiver.m_location, "'" + receiver.m_name + "' receives " +
                                                         (receives.empty() ? "nothing" : receives));
+            command->m_entry = add_entry(receiver, *command);
         }
     }
 

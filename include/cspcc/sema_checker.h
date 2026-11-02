@@ -253,6 +253,8 @@ namespace cspcc
 
         /**
          * Find, for each output, the entry of the receiving family it goes through.
+         *
+         * An output no input matches gets a warning and an entry that is never accepted.
          */
         void match_outputs();
 
