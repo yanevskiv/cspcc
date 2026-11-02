@@ -1,0 +1,48 @@
+-- The notes' readers and writers: rw lets in any number of readers or one writer.
+-- Readers can keep writers waiting, and every process runs forever; try --timeout=2.
+
+NR :: 3
+NW :: 2
+
+[
+    (i:1..NR) Reader(i) :: READER
+ || (i:1..NW) Writer(i) :: WRITER
+ || rw :: RW
+]
+
+READER :: *[
+    true -> [
+        rw!Start_Read();
+        READING;
+        rw!Stop_Read();
+    ]
+]
+
+WRITER :: *[
+    true -> [
+        rw!Start_Write();
+        WRITING;
+        rw!Stop_Write();
+    ]
+]
+
+RW :: [
+    rCount : Integer;
+    wCount : Integer;
+    rCount := 0;
+    wCount := 0;
+    *[
+            wCount = 0, (i:1..NR) Reader(i)?Start_Read() -> [
+                rCount := rCount + 1;
+            ]
+        []  wCount = 0, rCount = 0, (i:1..NW) Writer(i)?Start_Write() -> [
+                wCount := wCount + 1;
+            ]
+        []  (i:1..NR) Reader(i)?Stop_Read() -> [
+                rCount := rCount - 1;
+            ]
+        []  (i:1..NW) Writer(i)?Stop_Write() -> [
+                wCount := wCount - 1;
+            ]
+    ]
+]

@@ -1,12 +1,36 @@
 -- A semaphore process, as on the slides, guarding N users' critical sections.
 -- It starts at 1 so it is a mutex, and it ends once every user has ended.
 
-const N = 5
-const ROUNDS = 3
+N :: 5
+ROUNDS :: 3
 
-S:: [ s: integer; s := 1;
-      *[ s > 0, (i:1..N) X(i)?wait() → s := s - 1
-       □ (i:1..N) X(i)?signal() → s := s + 1 ] ]
+[
+    S :: SEMAPHORE
+ || (i:1..N) X(i) :: USER
+]
 
-X(i:1..N):: [ k: integer; k := 0;
-              *[ k < ROUNDS → [ S!wait(); work(); S!signal(); k := k + 1 ] ] ]
+SEMAPHORE :: [
+    s : Integer;
+    s := 1;
+    *[
+            s > 0, (i:1..N) X(i)?wait() -> [
+                s := s - 1;
+            ]
+        []  (i:1..N) X(i)?signal() -> [
+                s := s + 1;
+            ]
+    ]
+]
+
+USER :: [
+    k : Integer;
+    k := 0;
+    *[
+        k < ROUNDS -> [
+            S!wait();
+            work();
+            S!signal();
+            k := k + 1;
+        ]
+    ]
+]

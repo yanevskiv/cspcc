@@ -1,18 +1,63 @@
 -- The slides' set as an array of processes, each holding at most one number, kept sorted.
 -- S(0) is the user; S(1) to S(N) are the set.
 
-const N = 10
+N :: 10
 
-S(i:1..N):: [ n, m: integer;
-  *[ S(i - 1)?has(n) → S(0)!false
-   □ S(i - 1)?insert(n) →
-       *[ S(i - 1)?has(m) → [ m <= n → S(0)!(m = n) □ m > n → S(i + 1)!has(m) ]
-        □ S(i - 1)?insert(m) → [ m < n → [ S(i + 1)!insert(n); n := m ]
-                               □ m = n → skip
-                               □ m > n → S(i + 1)!insert(m) ] ] ] ]
+[
+    (i:1..N) S(i) :: SET
+ || S(0) :: USER
+]
 
-S(0):: [ b: boolean;
-         S(1)!insert(4); S(1)!insert(1); S(1)!insert(9); S(1)!insert(4);
-         S(1)!has(9); [ (i:1..N) S(i)?b → skip ]; print(9, b);
-         S(1)!has(5); [ (i:1..N) S(i)?b → skip ]; print(5, b);
-         S(1)!has(1); [ (i:1..N) S(i)?b → skip ]; print(1, b) ]
+SET :: [
+    n, m : Integer;
+    *[
+            S(i - 1)?has(n) -> [
+                S(0)!false;
+            ]
+        []  S(i - 1)?insert(n) -> [
+                *[
+                        S(i - 1)?has(m) -> [
+                            [
+                                    m <= n -> [
+                                        S(0)!(m = n);
+                                    ]
+                                []  m > n -> [
+                                        S(i + 1)!has(m);
+                                    ]
+                            ]
+                        ]
+                    []  S(i - 1)?insert(m) -> [
+                            [
+                                    m < n -> [
+                                        S(i + 1)!insert(n);
+                                        n := m;
+                                    ]
+                                []  m = n -> [
+                                        skip;
+                                    ]
+                                []  m > n -> [
+                                        S(i + 1)!insert(m);
+                                    ]
+                            ]
+                        ]
+                ]
+            ]
+    ]
+]
+
+USER :: [
+    b : Boolean;
+    S(1)!insert(4);
+    S(1)!insert(1);
+    S(1)!insert(9);
+    S(1)!insert(4);
+    S(1)!has(9);
+    [ (i:1..N) S(i)?b -> skip ];
+    print(9, b);
+    S(1)!has(5);
+    [ (i:1..N) S(i)?b -> skip ];
+    print(5, b);
+    S(1)!has(1);
+    [ (i:1..N) S(i)?b -> skip ];
+    print(1, b);
+]

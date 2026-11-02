@@ -1,0 +1,3 @@
+-- (Test) Source: examples/santa_claus.csp
+-- (Test) Arguments: --delay=2 --trace --timeout=2
+-- (Test) Check: santa_claus

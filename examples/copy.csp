@@ -1,5 +1,27 @@
 -- The slides' first program: X copies characters from west to east.
 
-west:: [ X!'h'; X!'e'; X!'l'; X!'l'; X!'o' ]
-X:: *[ c: character; west?c → east!c ]
-east:: *[ c: character; X?c → print(c) ]
+[
+    west :: WEST
+ || X :: COPY
+ || east :: EAST
+]
+
+WEST :: [
+    X!'h';
+    X!'e';
+    X!'l';
+    X!'l';
+    X!'o';
+]
+
+COPY :: *[
+    c : Character; west?c -> [
+        east!c;
+    ]
+]
+
+EAST :: *[
+    c : Character; X?c -> [
+        print(c);
+    ]
+]

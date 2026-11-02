@@ -1,19 +1,52 @@
 -- The slides' dining philosophers: a process per fork, and a room that seats at most four.
 
-[ Phil(i:0..4)::PHILOSOPHER || Fork(i:0..4)::FORK || Room::ROOM ]
+[
+    (i:0..4) Phil(i) :: PHILOSOPHER
+ || (i:0..4) Fork(i) :: FORK
+ || Room :: ROOM
+]
 
-PHILOSOPHER:: [ left, right: integer; left := i; right := (i + 1) mod 5;
-  *[ true → [ THINK;
-              Room!ticket();
-              Fork(right)!in(); Fork(left)!in();
-              EAT;
-              Fork(left)!out(); Fork(right)!out();
-              Room!back() ] ] ]
+PHILOSOPHER :: [
+    left, right : Integer;
+    left := i;
+    right := (i + 1) mod 5;
+    *[
+        true -> [
+            THINK;
+            Room!ticket();
+            Fork(right)!in();
+            Fork(left)!in();
+            EAT;
+            Fork(left)!out();
+            Fork(right)!out();
+            Room!back();
+        ]
+    ]
+]
 
-FORK:: [ left, right: integer; left := (i + 4) mod 5; right := i;
-  *[ Phil(left)?in() → Phil(left)?out()
-   □ Phil(right)?in() → Phil(right)?out() ] ]
+FORK :: [
+    left, right : Integer;
+    left := (i + 4) mod 5;
+    right := i;
+    *[
+            Phil(left)?in() -> [
+                Phil(left)?out();
+            ]
+        []  Phil(right)?in() -> [
+                Phil(right)?out();
+            ]
+    ]
+]
 
-ROOM:: [ v: integer; v := 4;
-  *[ v > 0; (i:0..4) Phil(i)?ticket() → v := v - 1
-   □ (i:0..4) Phil(i)?back() → v := v + 1 ] ]
+ROOM :: [
+    v : Integer;
+    v := 4;
+    *[
+            v > 0, (i:0..4) Phil(i)?ticket() -> [
+                v := v - 1;
+            ]
+        []  (i:0..4) Phil(i)?back() -> [
+                v := v + 1;
+            ]
+    ]
+]

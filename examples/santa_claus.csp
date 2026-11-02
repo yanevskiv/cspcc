@@ -1,0 +1,75 @@
+-- The notes' Santa Claus: Santa delivers toys once all NR reindeer are back,
+-- and helps the elves three at a time. Every process runs forever; try --timeout=2.
+
+NR :: 9
+NE :: 10
+
+[
+    (i:1..NR) Reindeer(i) :: REINDEER
+ || (i:1..NE) Elf(i) :: ELF
+ || Santa :: SANTA
+]
+
+REINDEER :: *[
+    true -> [
+        VACATION;
+        Santa!back();
+        Santa?reward();
+    ]
+]
+
+ELF :: *[
+    true -> [
+        WORK;
+        Santa!help();
+        Santa?done();
+    ]
+]
+
+SANTA :: [
+    reindeer, elves, j : Integer;
+    waiting : (0..2) Integer;
+    reindeer := 0;
+    elves := 0;
+    *[
+            (i:1..NR) Reindeer(i)?back() -> [
+                reindeer := reindeer + 1;
+                [
+                        reindeer = NR -> [
+                            DELIVER_TOYS;
+                            j := 1;
+                            *[
+                                j <= NR -> [
+                                    Reindeer(j)!reward();
+                                    j := j + 1;
+                                ]
+                            ];
+                            reindeer := 0;
+                        ]
+                    []  reindeer < NR -> [
+                            skip;
+                        ]
+                ]
+            ]
+        []  (i:1..NE) Elf(i)?help() -> [
+                waiting(elves) := i;
+                elves := elves + 1;
+                [
+                        elves = 3 -> [
+                            HELP_ELVES;
+                            j := 0;
+                            *[
+                                j < 3 -> [
+                                    Elf(waiting(j))!done();
+                                    j := j + 1;
+                                ]
+                            ];
+                            elves := 0;
+                        ]
+                    []  elves < 3 -> [
+                            skip;
+                        ]
+                ]
+            ]
+    ]
+]

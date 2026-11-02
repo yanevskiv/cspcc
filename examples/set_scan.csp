@@ -1,19 +1,72 @@
 -- The set of the slides extended with scan(), which lists every element.
 
-S:: [ content: (0..99) integer; size: integer; size := 0; n: integer;
-  *[ X?has(n) → [ SEARCH; X!(i < size) ]
-   □ X?insert(n) → [ SEARCH;
-                     [ i < size → skip
-                     □ i = size; size < 100 → [ content(size) := n; size := size + 1 ] ] ]
-   □ X?scan() → [ i: integer; i := 0;
-                  *[ i < size → [ X!next(content(i)); i := i + 1 ] ];
-                  X!noneleft() ] ] ]
+[
+    S :: SET
+ || X :: USER
+]
 
-SEARCH:: [ i: integer; i := 0; *[ i < size; content(i) <> n → i := i + 1 ] ]
+SET :: [
+    content : (0..99) Integer;
+    size, n : Integer;
+    size := 0;
+    *[
+            X?has(n) -> [
+                SEARCH;
+                X!(i < size);
+            ]
+        []  X?insert(n) -> [
+                SEARCH;
+                [
+                        i < size -> [
+                            skip;
+                        ]
+                    []  i = size, size < 100 -> [
+                            content(size) := n;
+                            size := size + 1;
+                        ]
+                ]
+            ]
+        []  X?scan() -> [
+                i : Integer;
+                i := 0;
+                *[
+                    i < size -> [
+                        X!next(content(i));
+                        i := i + 1;
+                    ]
+                ];
+                X!noneleft();
+            ]
+    ]
+]
 
-X:: [ b: boolean;
-      S!insert(7); S!insert(2); S!insert(7); S!insert(9);
-      S!has(2); S?b; print(2, b);
-      S!scan(); more: boolean; more := true;
-      *[ more; x: integer; S?next(x) → print(x)
-       □ more; S?noneleft() → more := false ] ]
+SEARCH :: [
+    i : Integer;
+    i := 0;
+    *[
+        i < size, content(i) <> n -> [
+            i := i + 1;
+        ]
+    ]
+]
+
+USER :: [
+    b, more : Boolean;
+    S!insert(7);
+    S!insert(2);
+    S!insert(7);
+    S!insert(9);
+    S!has(2);
+    S?b;
+    print(2, b);
+    S!scan();
+    more := true;
+    *[
+            more; x : Integer; S?next(x) -> [
+                print(x);
+            ]
+        []  more, S?noneleft() -> [
+                more := false;
+            ]
+    ]
+]
