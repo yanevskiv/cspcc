@@ -37,8 +37,8 @@ namespace
                                                      std::string *messages = nullptr)
     {
         std::ostringstream stream;
-        cspcc::DiagEngine diag("test.csp", source, stream);
-        cspcc::LexerTokenizer tokenizer(source, diag);
+        cspcc::DiagnosticsEngine diagnostics("test.csp", source, stream);
+        cspcc::LexerTokenizer tokenizer(source, diagnostics);
         std::vector<cspcc::data::DataTokenKind> kinds;
         for (const cspcc::data::DataToken &token : tokenizer.tokenize()) {
             kinds.push_back(token.m_kind);

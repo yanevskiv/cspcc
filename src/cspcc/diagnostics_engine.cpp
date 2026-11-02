@@ -18,7 +18,7 @@
  */
 
 // Project header for the diagnostics.
-#include "cspcc/diag_engine.h"
+#include "cspcc/diagnostics_engine.h"
 
 // Standard header for moving the path.
 #include <utility>
@@ -28,7 +28,8 @@ namespace cspcc
 {
 
     // Split the source into lines for quoting.
-    DiagEngine::DiagEngine(std::string path, std::string_view source, std::ostream &stream)
+    DiagnosticsEngine::DiagnosticsEngine(std::string path, std::string_view source,
+                                         std::ostream &stream)
         : m_path(std::move(path))
         , m_stream(stream)
     {
@@ -45,8 +46,8 @@ namespace cspcc
     }
 
     // Report an error.
-    void DiagEngine::error(const data::DataLocation &location, std::string_view code,
-                           std::string_view message)
+    void DiagnosticsEngine::error(const data::DataLocation &location, std::string_view code,
+                                  std::string_view message)
     {
         m_errors++;
         m_last_shown = true;
@@ -54,8 +55,8 @@ namespace cspcc
     }
 
     // Report a warning, or an error under -Werror.
-    void DiagEngine::warning(const data::DataLocation &location, std::string_view code,
-                             std::string_view message)
+    void DiagnosticsEngine::warning(const data::DataLocation &location, std::string_view code,
+                                    std::string_view message)
     {
         m_last_shown = m_warnings_enabled;
         if (!m_warnings_enabled) {
@@ -69,7 +70,7 @@ namespace cspcc
     }
 
     // Add a note to the last diagnostic that was printed.
-    void DiagEngine::note(const data::DataLocation &location, std::string_view message)
+    void DiagnosticsEngine::note(const data::DataLocation &location, std::string_view message)
     {
         if (m_last_shown) {
             print(location, "note", "", message);
@@ -77,27 +78,27 @@ namespace cspcc
     }
 
     // Set the warning switches.
-    void DiagEngine::set_warnings(bool enabled, bool asErrors)
+    void DiagnosticsEngine::set_warnings(bool enabled, bool asErrors)
     {
         m_warnings_enabled = enabled;
         m_warnings_as_errors = asErrors;
     }
 
     // Count the errors.
-    int DiagEngine::error_count() const
+    int DiagnosticsEngine::error_count() const
     {
         return m_errors;
     }
 
     // Return the file's name.
-    const std::string &DiagEngine::path() const
+    const std::string &DiagnosticsEngine::path() const
     {
         return m_path;
     }
 
     // Print the position, the level, the message and the code, then the quoted line.
-    void DiagEngine::print(const data::DataLocation &location, std::string_view level,
-                           std::string_view code, std::string_view message)
+    void DiagnosticsEngine::print(const data::DataLocation &location, std::string_view level,
+                                  std::string_view code, std::string_view message)
     {
         m_stream << m_path << ':';
         if (location.m_line > 0) {
@@ -112,7 +113,7 @@ namespace cspcc
     }
 
     // Print the line under the diagnostic with a caret, keeping its tabs.
-    void DiagEngine::quote(const data::DataLocation &location)
+    void DiagnosticsEngine::quote(const data::DataLocation &location)
     {
         if (location.m_line < 1 || location.m_line > static_cast<int>(m_lines.size())) {
             return;

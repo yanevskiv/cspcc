@@ -23,7 +23,7 @@
 #include "cspcc/data/data_location.h"
 #include "cspcc/data/data_token.h"
 #include "cspcc/data/data_token_kind.h"
-#include "cspcc/diag_engine.h"
+#include "cspcc/diagnostics_engine.h"
 
 #include <cstddef>
 #include <ostream>
@@ -41,9 +41,9 @@ namespace cspcc
          * Prepare to split one source.
          *
          * @param source Text to split, which must outlive the tokenizer.
-         * @param diag Destination of lexical errors.
+         * @param diagnostics Destination of lexical errors.
          */
-        LexerTokenizer(std::string_view source, DiagEngine &diag);
+        LexerTokenizer(std::string_view source, DiagnosticsEngine &diagnostics);
 
         /**
          * Split the whole source.
@@ -155,7 +155,7 @@ namespace cspcc
         std::string_view m_source;
 
         /** Destination of lexical errors. */
-        DiagEngine &m_diag;
+        DiagnosticsEngine &m_diagnostics;
 
         /** Offset of the next byte. */
         size_t m_position = 0;

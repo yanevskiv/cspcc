@@ -18,14 +18,14 @@
  */
 
 // Project header for the exception.
-#include "cspcc/diag_abort.h"
+#include "cspcc/diagnostics_abort.h"
 
 // Namespace for cspcc's diagnostics.
 namespace cspcc
 {
 
     // Describe the exception.
-    const char *DiagAbort::what() const noexcept
+    const char *DiagnosticsAbort::what() const noexcept
     {
         return "cspcc: parse aborted";
     }

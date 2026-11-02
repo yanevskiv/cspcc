@@ -17,8 +17,8 @@
  * along with cspcc; if not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CSPCC_DIAG_ABORT_H
-#define CSPCC_DIAG_ABORT_H
+#ifndef CSPCC_DIAGNOSTICS_ABORT_H
+#define CSPCC_DIAGNOSTICS_ABORT_H
 
 #include <exception>
 
@@ -26,7 +26,7 @@
 namespace cspcc
 {
     /** Signals an error, already reported, that the parser can't recover from. */
-    class DiagAbort : public std::exception
+    class DiagnosticsAbort : public std::exception
     {
     public:
         /**

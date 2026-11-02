@@ -19,7 +19,7 @@
 
 // Project headers for the stages of a translation.
 #include "cspcc/driver_app.h"
-#include "cspcc/diag_engine.h"
+#include "cspcc/diagnostics_engine.h"
 #include "cspcc/lexer_tokenizer.h"
 
 // Standard headers for files and streams.
@@ -70,14 +70,14 @@ namespace cspcc
     // Run the stages, stopping after the first that reports errors.
     int DriverApp::translate(const std::string &source)
     {
-        DiagEngine diag(m_options.input(), source, std::cerr);
-        diag.set_warnings(m_options.warnings_enabled(), m_options.warnings_as_errors());
-        LexerTokenizer tokenizer(source, diag);
+        DiagnosticsEngine diagnostics(m_options.input(), source, std::cerr);
+        diagnostics.set_warnings(m_options.warnings_enabled(), m_options.warnings_as_errors());
+        LexerTokenizer tokenizer(source, diagnostics);
         std::vector<data::DataToken> tokens = tokenizer.tokenize();
         if (m_options.dumps_tokens()) {
             LexerTokenizer::dump(tokens, std::cout);
         }
-        return diag.error_count() ? 1 : 0;
+        return diagnostics.error_count() ? 1 : 0;
     }
 
     // Read a whole file.

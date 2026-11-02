@@ -17,8 +17,8 @@
  * along with cspcc; if not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CSPCC_DIAG_ENGINE_H
-#define CSPCC_DIAG_ENGINE_H
+#ifndef CSPCC_DIAGNOSTICS_ENGINE_H
+#define CSPCC_DIAGNOSTICS_ENGINE_H
 
 #include "cspcc/data/data_location.h"
 
@@ -31,7 +31,7 @@
 namespace cspcc
 {
     /** Reports errors, warnings and notes about one CSP file. */
-    class DiagEngine
+    class DiagnosticsEngine
     {
     public:
         /**
@@ -41,7 +41,7 @@ namespace cspcc
          * @param source Text of the file, for quoting its lines.
          * @param stream Destination of the diagnostics.
          */
-        DiagEngine(std::string path, std::string_view source, std::ostream &stream);
+        DiagnosticsEngine(std::string path, std::string_view source, std::ostream &stream);
 
         /**
          * Report an error.

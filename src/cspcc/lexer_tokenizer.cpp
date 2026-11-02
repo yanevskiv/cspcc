@@ -68,9 +68,9 @@ namespace cspcc
     }
 
     // Prepare to split one source.
-    LexerTokenizer::LexerTokenizer(std::string_view source, DiagEngine &diag)
+    LexerTokenizer::LexerTokenizer(std::string_view source, DiagnosticsEngine &diagnostics)
         : m_source(source)
-        , m_diag(diag)
+        , m_diagnostics(diagnostics)
     {
         // Empty.
     }
@@ -300,10 +300,10 @@ namespace cspcc
             unsigned codePoint = 0;
             size_t length = 1;
             decode(codePoint, length);
-            m_diag.error(here(), "ERR_LEX_NON_ASCII_IDENT",
-                         "a non-ASCII character (" + code_point_name(codePoint) +
-                             ") right after '" + word + "'");
-            m_diag.note(here(), "identifiers are ASCII letters, digits and '_'");
+            m_diagnostics.error(here(), "ERR_LEX_NON_ASCII_IDENT",
+                                "a non-ASCII character (" + code_point_name(codePoint) +
+                                    ") right after '" + word + "'");
+            m_diagnostics.note(here(), "identifiers are ASCII letters, digits and '_'");
             advance(length);
         }
     }
@@ -342,14 +342,15 @@ namespace cspcc
             long long value = 0;
             auto [end, status] = std::from_chars(text.data(), text.data() + text.size(), value);
             if (status != std::errc() || end != text.data() + text.size() || value > lexerIntMax) {
-                m_diag.error(location, "ERR_LEX_INT_RANGE",
-                             "the integer " + text + " is larger than 2147483647");
+                m_diagnostics.error(location, "ERR_LEX_INT_RANGE",
+                                    "the integer " + text + " is larger than 2147483647");
                 value = 0;
             }
             token.m_integer = value;
         }
         if (std::isalpha(peek()) || peek() == '_') {
-            m_diag.error(here(), "ERR_LEX_BAD_NUMBER", "a letter right after the number " + text);
+            m_diagnostics.error(here(), "ERR_LEX_BAD_NUMBER",
+                                "a letter right after the number " + text);
             while (std::isalnum(peek()) || peek() == '_') {
                 advance();
             }
@@ -370,21 +371,22 @@ namespace cspcc
             count++;
         }
         if (peek(count) != quote) {
-            m_diag.error(location, "ERR_LEX_UNTERMINATED",
-                         quote == '\'' ? "a character literal with no closing quote"
-                                       : "a string with no closing quote");
+            m_diagnostics.error(location, "ERR_LEX_UNTERMINATED",
+                                quote == '\'' ? "a character literal with no closing quote"
+                                              : "a string with no closing quote");
             advance(count);
             return;
         }
         std::string body(m_source.substr(m_position + 1, count - 1));
         if (body.size() != 1 || static_cast<unsigned char>(body[0]) >= 0x80) {
             if (quote == '"') {
-                m_diag.error(location, "ERR_LEX_STRING",
-                             "strings aren't values in CSP; only a one-character string such as "
-                             "\"A\" is, as a character");
+                m_diagnostics.error(
+                    location, "ERR_LEX_STRING",
+                    "strings aren't values in CSP; only a one-character string such as "
+                    "\"A\" is, as a character");
             } else {
-                m_diag.error(location, "ERR_LEX_BAD_CHAR_LITERAL",
-                             "a character literal holds one ASCII character");
+                m_diagnostics.error(location, "ERR_LEX_BAD_CHAR_LITERAL",
+                                    "a character literal holds one ASCII character");
             }
             advance(count + 1);
             return;
@@ -399,7 +401,7 @@ namespace cspcc
         unsigned codePoint = 0;
         size_t length = 1;
         if (!decode(codePoint, length)) {
-            m_diag.error(location, "ERR_LEX_BAD_UTF8", "a byte that isn't UTF-8");
+            m_diagnostics.error(location, "ERR_LEX_BAD_UTF8", "a byte that isn't UTF-8");
             advance(length);
             return;
         }
@@ -408,12 +410,14 @@ namespace cspcc
             push(symbol->second, location, length);
             return;
         }
-        m_diag.error(location, "ERR_LEX_BAD_CHAR",
-                     "unexpected character " + std::string(m_source.substr(m_position, length)) +
-                         " (" + code_point_name(codePoint) + ")");
+        m_diagnostics.error(location, "ERR_LEX_BAD_CHAR",
+                            "unexpected character " +
+                                std::string(m_source.substr(m_position, length)) + " (" +
+                                code_point_name(codePoint) + ")");
         if ((codePoint >= 0x400 && codePoint <= 0x4FF) || codePoint < 0x250) {
-            m_diag.note(location, "identifiers are ASCII; a Cyrillic or accented letter looks "
-                                  "like a Latin one but isn't");
+            m_diagnostics.note(location,
+                               "identifiers are ASCII; a Cyrillic or accented letter looks "
+                               "like a Latin one but isn't");
         }
         advance(length);
     }
@@ -498,8 +502,8 @@ namespace cspcc
             default:
                 break;
         }
-        m_diag.error(location, "ERR_LEX_BAD_CHAR",
-                     std::string("unexpected character '") + static_cast<char>(c) + "'");
+        m_diagnostics.error(location, "ERR_LEX_BAD_CHAR",
+                            std::string("unexpected character '") + static_cast<char>(c) + "'");
         advance();
     }
 
