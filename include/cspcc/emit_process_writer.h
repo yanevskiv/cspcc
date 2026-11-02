@@ -3,16 +3,9 @@
 #ifndef CSPCC_EMIT_PROCESS_WRITER_H
 #define CSPCC_EMIT_PROCESS_WRITER_H
 
-#include "cspcc/data/data_command.h"
-#include "cspcc/data/data_entry.h"
-#include "cspcc/data/data_expression.h"
-#include "cspcc/data/data_family.h"
-#include "cspcc/data/data_guarded_command.h"
-#include "cspcc/data/data_location.h"
-#include "cspcc/data/data_process_name.h"
-#include "cspcc/data/data_symbol.h"
-#include "cspcc/data/data_type_base.h"
-#include "cspcc/data/data_variant.h"
+#include "cspcc/ast.h"
+#include "cspcc/program.h"
+#include "cspcc/token.h"
 #include "cspcc/emit_expression_writer.h"
 #include "cspcc/emit_name_table.h"
 
@@ -30,7 +23,7 @@ namespace cspcc
     {
     public:
         // Prepare to write one variant.
-        EmitProcessWriter(const data::DataFamily &family, const data::DataVariant &variant,
+        EmitProcessWriter(const Family &family, const Variant &variant,
                           EmitNameTable &names, std::string source);
 
         // Write the variant as a declare block.
@@ -47,50 +40,50 @@ namespace cspcc
         const std::string &peer();
 
         // Write a command list, or null when it writes nothing.
-        void emit_commands(const std::vector<std::unique_ptr<data::DataCommand>> &commands);
+        void emit_commands(const std::vector<std::unique_ptr<Command>> &commands);
 
         // Write one command.
-        void emit_command(const data::DataCommand &command);
+        void emit_command(const Command &command);
 
         // Write an assignment, a tuple through temporaries.
-        void emit_assignment(const data::DataCommand &command);
+        void emit_assignment(const Command &command);
 
         // Write an input command outside a guard.
-        void emit_input(const data::DataCommand &command);
+        void emit_input(const Command &command);
 
         // Write an output command.
-        void emit_output(const data::DataCommand &command);
+        void emit_output(const Command &command);
 
         // Write a call of a hook.
-        void emit_hook(const data::DataCommand &command);
+        void emit_hook(const Command &command);
 
         // Write an alternative or repetitive command.
-        void emit_alternative(const data::DataCommand &command);
+        void emit_alternative(const Command &command);
 
         // Write an alternative or repetitive command of one guard with no input or range.
-        void emit_plain_alternative(const data::DataCommand &command);
+        void emit_plain_alternative(const Command &command);
 
         // Write the accept statement of an input.
-        void emit_accept(const data::DataCommand &input, std::string_view source);
+        void emit_accept(const Command &input, std::string_view source);
 
         // Write the conditions of a guard joined by and then.
-        std::string condition(const data::DataGuardedCommand &guard);
+        std::string condition(const GuardedCommand &guard);
 
         // Render the message of an input or output for traces.
-        std::string message_image(const data::DataCommand &command,
+        std::string message_image(const Command &command,
                                   const std::vector<std::string> &values);
 
         // Render the number of the process a command names.
-        std::string process_id(const data::DataProcessName &process);
+        std::string process_id(const ProcessName &process);
 
         // Render a location for the inside of an Ada string literal.
-        std::string location(const data::DataLocation &location) const;
+        std::string location(const Location &location) const;
 
         // Family the variant belongs to.
-        const data::DataFamily &m_family;
+        const Family &m_family;
 
         // Variant being written.
-        const data::DataVariant &m_variant;
+        const Variant &m_variant;
 
         // Names taken in the task body, the block's included.
         EmitNameTable &m_names;

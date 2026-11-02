@@ -3,9 +3,8 @@
 #ifndef CSPCC_EMIT_EXPRESSION_WRITER_H
 #define CSPCC_EMIT_EXPRESSION_WRITER_H
 
-#include "cspcc/data/data_expression.h"
-#include "cspcc/data/data_symbol.h"
-#include "cspcc/data/data_type_base.h"
+#include "cspcc/ast.h"
+#include "cspcc/program.h"
 
 #include <map>
 #include <string>
@@ -19,20 +18,20 @@ namespace cspcc
     {
     public:
         // Render an expression.
-        std::string render(const data::DataExpression &expression,
-                           data::DataTypeBase want = data::DataTypeBase::None) const;
+        std::string render(const Expression &expression,
+                           BaseType want = BaseType::None) const;
 
         // Render a symbol as fixed text from now on, such as a bound variable as a constant.
-        void substitute(const data::DataSymbol *symbol, std::string text);
+        void substitute(const Symbol *symbol, std::string text);
 
         // Render a symbol by its Ada name again.
-        void forget(const data::DataSymbol *symbol);
+        void forget(const Symbol *symbol);
 
         // Name the Ada type of a CSP type.
-        static std::string_view ada_type(data::DataTypeBase base);
+        static std::string_view ada_type(BaseType base);
 
         // Give the initial value of a variable of a type.
-        static std::string_view default_value(data::DataTypeBase base);
+        static std::string_view default_value(BaseType base);
 
         // Render a real number as an Ada literal.
         static std::string real_literal(double value);
@@ -42,7 +41,7 @@ namespace cspcc
 
     private:
         // Texts standing for symbols, such as bound variables in unrolled alternatives.
-        std::map<const data::DataSymbol *, std::string> m_substitutions;
+        std::map<const Symbol *, std::string> m_substitutions;
     };
 
 }

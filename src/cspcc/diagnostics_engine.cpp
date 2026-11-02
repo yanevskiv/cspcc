@@ -26,7 +26,7 @@ namespace cspcc
     }
 
     // Report an error.
-    void DiagnosticsEngine::error(const data::DataLocation &location, std::string_view code,
+    void DiagnosticsEngine::error(const Location &location, std::string_view code,
                                   std::string_view message)
     {
         m_errors++;
@@ -35,7 +35,7 @@ namespace cspcc
     }
 
     // Report a warning, or an error under -Werror.
-    void DiagnosticsEngine::warning(const data::DataLocation &location, std::string_view code,
+    void DiagnosticsEngine::warning(const Location &location, std::string_view code,
                                     std::string_view message)
     {
         m_last_shown = m_warnings_enabled;
@@ -50,7 +50,7 @@ namespace cspcc
     }
 
     // Add a note to the last diagnostic that was printed.
-    void DiagnosticsEngine::note(const data::DataLocation &location, std::string_view message)
+    void DiagnosticsEngine::note(const Location &location, std::string_view message)
     {
         if (m_last_shown) {
             print(location, "note", "", message);
@@ -83,7 +83,7 @@ namespace cspcc
     }
 
     // Print the position, the level, the message and the code, then the quoted line.
-    void DiagnosticsEngine::print(const data::DataLocation &location, std::string_view level,
+    void DiagnosticsEngine::print(const Location &location, std::string_view level,
                                   std::string_view code, std::string_view message)
     {
         m_stream << m_path << ':';
@@ -99,7 +99,7 @@ namespace cspcc
     }
 
     // Print the line under the diagnostic with a caret, keeping its tabs.
-    void DiagnosticsEngine::quote(const data::DataLocation &location)
+    void DiagnosticsEngine::quote(const Location &location)
     {
         if (location.m_line < 1 || location.m_line > static_cast<int>(m_lines.size())) {
             return;

@@ -13,43 +13,43 @@ namespace cspcc
     {
 
         // Check whether an operator compares.
-        bool compares(data::DataTokenKind op)
+        bool compares(TokenKind op)
         {
-            using Kind = data::DataTokenKind;
+            using Kind = TokenKind;
             return op == Kind::Equal || op == Kind::NotEqual || op == Kind::Less ||
                    op == Kind::LessEqual || op == Kind::Greater || op == Kind::GreaterEqual;
         }
 
         // Spell a binary operator in Ada, and and or short-circuited.
-        std::string_view ada_operator(data::DataTokenKind op)
+        std::string_view ada_operator(TokenKind op)
         {
             switch (op) {
-                case data::DataTokenKind::Plus:
+                case TokenKind::Plus:
                     return "+";
-                case data::DataTokenKind::Minus:
+                case TokenKind::Minus:
                     return "-";
-                case data::DataTokenKind::Star:
+                case TokenKind::Star:
                     return "*";
-                case data::DataTokenKind::Slash:
-                case data::DataTokenKind::Div:
+                case TokenKind::Slash:
+                case TokenKind::Div:
                     return "/";
-                case data::DataTokenKind::Mod:
+                case TokenKind::Mod:
                     return "mod";
-                case data::DataTokenKind::Equal:
+                case TokenKind::Equal:
                     return "=";
-                case data::DataTokenKind::NotEqual:
+                case TokenKind::NotEqual:
                     return "/=";
-                case data::DataTokenKind::Less:
+                case TokenKind::Less:
                     return "<";
-                case data::DataTokenKind::LessEqual:
+                case TokenKind::LessEqual:
                     return "<=";
-                case data::DataTokenKind::Greater:
+                case TokenKind::Greater:
                     return ">";
-                case data::DataTokenKind::GreaterEqual:
+                case TokenKind::GreaterEqual:
                     return ">=";
-                case data::DataTokenKind::And:
+                case TokenKind::And:
                     return "and then";
-                case data::DataTokenKind::Or:
+                case TokenKind::Or:
                     return "or else";
                 default:
                     return "?";
@@ -59,31 +59,31 @@ namespace cspcc
     }
 
     // Render by kind; a real result or a comparison with a real converts integer operands.
-    std::string EmitExpressionWriter::render(const data::DataExpression &expression,
-                                             data::DataTypeBase want) const
+    std::string EmitExpressionWriter::render(const Expression &expression,
+                                             BaseType want) const
     {
-        using Base = data::DataTypeBase;
+        using Base = BaseType;
         std::string text;
         switch (expression.m_kind) {
-            case data::DataExpressionKind::Integer:
+            case ExpressionKind::Integer:
                 text = std::to_string(expression.m_integer);
                 break;
-            case data::DataExpressionKind::Real:
+            case ExpressionKind::Real:
                 text = real_literal(expression.m_real);
                 break;
-            case data::DataExpressionKind::Character:
+            case ExpressionKind::Character:
                 text = std::string("'") + static_cast<char>(expression.m_integer) + "'";
                 break;
-            case data::DataExpressionKind::Boolean:
+            case ExpressionKind::Boolean:
                 text = expression.m_boolean ? "True" : "False";
                 break;
-            case data::DataExpressionKind::Name: {
+            case ExpressionKind::Name: {
                 auto substitution = m_substitutions.find(expression.m_symbol);
                 text = substitution != m_substitutions.end() ? substitution->second
                                                              : expression.m_symbol->m_ada;
                 break;
             }
-            case data::DataExpressionKind::Call: {
+            case ExpressionKind::Call: {
                 text = expression.m_symbol->m_ada + " (";
                 for (size_t i = 0; i < expression.m_args.size(); i++) {
                     text += (i ? ", " : "") + render(*expression.m_args[i]);
@@ -91,14 +91,14 @@ namespace cspcc
                 text += ")";
                 break;
             }
-            case data::DataExpressionKind::Unary:
-                text = expression.m_op == data::DataTokenKind::Not
+            case ExpressionKind::Unary:
+                text = expression.m_op == TokenKind::Not
                            ? "(not " + render(*expression.m_args[0]) + ")"
                            : "(-" + render(*expression.m_args[0], expression.m_type) + ")";
                 break;
-            case data::DataExpressionKind::Binary: {
-                const data::DataExpression &left = *expression.m_args[0];
-                const data::DataExpression &right = *expression.m_args[1];
+            case ExpressionKind::Binary: {
+                const Expression &left = *expression.m_args[0];
+                const Expression &right = *expression.m_args[1];
                 Base operands = Base::None;
                 if (expression.m_type == Base::Real ||
                     (compares(expression.m_op) &&
@@ -110,7 +110,7 @@ namespace cspcc
                        ")";
                 break;
             }
-            case data::DataExpressionKind::Tuple:
+            case ExpressionKind::Tuple:
                 text = "()";
                 break;
         }
@@ -121,26 +121,26 @@ namespace cspcc
     }
 
     // Replace a symbol.
-    void EmitExpressionWriter::substitute(const data::DataSymbol *symbol, std::string text)
+    void EmitExpressionWriter::substitute(const Symbol *symbol, std::string text)
     {
         m_substitutions[symbol] = std::move(text);
     }
 
     // Stop replacing a symbol.
-    void EmitExpressionWriter::forget(const data::DataSymbol *symbol)
+    void EmitExpressionWriter::forget(const Symbol *symbol)
     {
         m_substitutions.erase(symbol);
     }
 
     // Name an Ada type.
-    std::string_view EmitExpressionWriter::ada_type(data::DataTypeBase base)
+    std::string_view EmitExpressionWriter::ada_type(BaseType base)
     {
         switch (base) {
-            case data::DataTypeBase::Real:
+            case BaseType::Real:
                 return "Long_Float";
-            case data::DataTypeBase::Character:
+            case BaseType::Character:
                 return "Character";
-            case data::DataTypeBase::Boolean:
+            case BaseType::Boolean:
                 return "Boolean";
             default:
                 return "Integer";
@@ -148,14 +148,14 @@ namespace cspcc
     }
 
     // Give an initial value.
-    std::string_view EmitExpressionWriter::default_value(data::DataTypeBase base)
+    std::string_view EmitExpressionWriter::default_value(BaseType base)
     {
         switch (base) {
-            case data::DataTypeBase::Real:
+            case BaseType::Real:
                 return "0.0";
-            case data::DataTypeBase::Character:
+            case BaseType::Character:
                 return "' '";
-            case data::DataTypeBase::Boolean:
+            case BaseType::Boolean:
                 return "False";
             default:
                 return "0";

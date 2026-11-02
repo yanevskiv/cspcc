@@ -82,7 +82,7 @@ namespace cspcc
     }
 
     // Return the -D constants.
-    const std::vector<data::DataDefine> &DriverOptions::defines() const
+    const std::vector<Define> &DriverOptions::defines() const
     {
         return m_defines;
     }
@@ -131,7 +131,7 @@ namespace cspcc
             error = "-D takes NAME=VALUE, not '" + std::string(text) + "'";
             return false;
         }
-        data::DataDefine define;
+        Define define;
         define.m_name = text.substr(0, equals);
         define.m_value = text.substr(equals + 1);
         m_defines.push_back(define);

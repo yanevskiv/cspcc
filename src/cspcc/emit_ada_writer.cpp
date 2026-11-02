@@ -50,7 +50,7 @@ namespace cspcc
     }
 
     // Prepare to write a program.
-    EmitAdaWriter::EmitAdaWriter(data::DataProgram &program, std::string unit, std::string source)
+    EmitAdaWriter::EmitAdaWriter(Program &program, std::string unit, std::string source)
         : m_program(program)
         , m_unit(std::move(unit))
         , m_source(std::move(source))
@@ -74,10 +74,10 @@ namespace cspcc
         line("Total : constant := " + std::to_string(m_program.m_total) + ";");
         line("subtype Pid is R.Pid range 1 .. Total;");
         write_constants();
-        for (const std::unique_ptr<data::DataFamily> &family : m_program.m_families) {
+        for (const std::unique_ptr<Family> &family : m_program.m_families) {
             write_family_spec(*family);
         }
-        for (const std::unique_ptr<data::DataFamily> &family : m_program.m_families) {
+        for (const std::unique_ptr<Family> &family : m_program.m_families) {
             write_family_body(*family);
         }
         m_indent--;
@@ -139,15 +139,15 @@ namespace cspcc
             m_names.reserve(name);
         }
         size_t arity = 0;
-        for (const std::unique_ptr<data::DataFamily> &family : m_program.m_families) {
-            for (const std::unique_ptr<data::DataEntry> &entry : family->m_entries) {
+        for (const std::unique_ptr<Family> &family : m_program.m_families) {
+            for (const std::unique_ptr<Entry> &entry : family->m_entries) {
                 arity = std::max(arity, entry->m_types.size());
             }
         }
         for (size_t i = 1; i <= arity; i++) {
             m_names.reserve("Arg_" + std::to_string(i));
         }
-        for (const std::unique_ptr<data::DataFamily> &family : m_program.m_families) {
+        for (const std::unique_ptr<Family> &family : m_program.m_families) {
             std::string base = EmitNameTable::sanitize(family->m_name);
             std::string candidate = base;
             auto clashes = [&](const std::string &prefix) {
@@ -164,12 +164,12 @@ namespace cspcc
             }
             family->m_ada = candidate;
         }
-        for (data::DataSymbol *constant : m_program.m_constants) {
+        for (Symbol *constant : m_program.m_constants) {
             constant->m_ada = m_names.make(constant->m_name);
         }
-        for (const std::unique_ptr<data::DataFamily> &family : m_program.m_families) {
+        for (const std::unique_ptr<Family> &family : m_program.m_families) {
             EmitNameTable entries = m_names;
-            for (const std::unique_ptr<data::DataEntry> &entry : family->m_entries) {
+            for (const std::unique_ptr<Entry> &entry : family->m_entries) {
                 entry->m_ada =
                     entries.make(entry->m_anonymous ? "Msg" : "C_" + entry->m_constructor);
             }
@@ -192,8 +192,8 @@ namespace cspcc
         if (!m_program.m_constants.empty()) {
             line("");
         }
-        for (const data::DataSymbol *constant : m_program.m_constants) {
-            if (constant->m_base == data::DataTypeBase::Integer && constant->m_known) {
+        for (const Symbol *constant : m_program.m_constants) {
+            if (constant->m_base == BaseType::Integer && constant->m_known) {
                 line(constant->m_ada +
                      " : constant := " + EmitExpressionWriter::number(constant->m_integer) + ";");
                 continue;
@@ -205,7 +205,7 @@ namespace cspcc
     }
 
     // Write the task type with an entry family per message kind, then the tables.
-    void EmitAdaWriter::write_family_spec(const data::DataFamily &family)
+    void EmitAdaWriter::write_family_spec(const Family &family)
     {
         const std::string &a = family.m_ada;
         std::string first = std::to_string(family.m_first);
@@ -216,7 +216,7 @@ namespace cspcc
         } else {
             line("task type " + a + "_Task (Id : Pid) is");
             m_indent++;
-            for (const std::unique_ptr<data::DataEntry> &entry : family.m_entries) {
+            for (const std::unique_ptr<Entry> &entry : family.m_entries) {
                 std::vector<std::string> parameters;
                 for (size_t i = 0; i < entry->m_types.size(); i++) {
                     parameters.push_back(
@@ -236,7 +236,7 @@ namespace cspcc
         line("type " + a + "_Access is access " + a + "_Task;");
         line(a + "_T : array (Pid range " + first + " .. " + last + ") of " + a + "_Access;");
         std::string variants;
-        for (const data::DataInstance &instance : family.m_instances) {
+        for (const Instance &instance : family.m_instances) {
             variants += (variants.empty() ? "" : ", ") + std::to_string(instance.m_pid) + " => " +
                         std::to_string(instance.m_variant);
         }
@@ -254,7 +254,7 @@ namespace cspcc
         std::string image;
         std::map<std::vector<long long>, int> pids;
         std::string indices;
-        for (const data::DataInstance &instance : family.m_instances) {
+        for (const Instance &instance : family.m_instances) {
             pids[instance.m_indices] = instance.m_pid;
             std::string tuple;
             for (size_t d = 0; d < instance.m_indices.size(); d++) {
@@ -290,11 +290,11 @@ namespace cspcc
     }
 
     // Write the task body: wait for the start, run the variant, then say it is done.
-    void EmitAdaWriter::write_family_body(const data::DataFamily &family)
+    void EmitAdaWriter::write_family_body(const Family &family)
     {
         const std::string &a = family.m_ada;
         EmitNameTable names = m_names;
-        for (const std::unique_ptr<data::DataEntry> &entry : family.m_entries) {
+        for (const std::unique_ptr<Entry> &entry : family.m_entries) {
             names.reserve(entry->m_ada);
         }
         line("");
@@ -330,7 +330,7 @@ namespace cspcc
     }
 
     // Write a nested named aggregate, listing the subscripts that name a process.
-    std::string EmitAdaWriter::map_aggregate(const data::DataFamily &family,
+    std::string EmitAdaWriter::map_aggregate(const Family &family,
                                              const std::map<std::vector<long long>, int> &pids,
                                              std::vector<long long> &prefix) const
     {
@@ -360,7 +360,7 @@ namespace cspcc
     void EmitAdaWriter::write_main()
     {
         line("R.Init (Total);");
-        for (const std::unique_ptr<data::DataFamily> &family : m_program.m_families) {
+        for (const std::unique_ptr<Family> &family : m_program.m_families) {
             const std::string &a = family->m_ada;
             if (family->m_arity == 0) {
                 std::string pid = std::to_string(family->m_first);

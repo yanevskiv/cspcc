@@ -21,10 +21,10 @@ namespace cspcc
         }
 
         // Count the alternatives a guard's ranges unroll into.
-        long long unrolled(const data::DataGuardedCommand &guard)
+        long long unrolled(const GuardedCommand &guard)
         {
             long long count = 1;
-            for (const std::unique_ptr<data::DataRange> &range : guard.m_ranges) {
+            for (const std::unique_ptr<Range> &range : guard.m_ranges) {
                 count *= range->m_last - range->m_first + 1;
             }
             return count;
@@ -33,8 +33,8 @@ namespace cspcc
     }
 
     // Keep the task body's names and the source's name.
-    EmitProcessWriter::EmitProcessWriter(const data::DataFamily &family,
-                                         const data::DataVariant &variant, EmitNameTable &names,
+    EmitProcessWriter::EmitProcessWriter(const Family &family,
+                                         const Variant &variant, EmitNameTable &names,
                                          std::string source)
         : m_family(family)
         , m_variant(variant)
@@ -46,13 +46,13 @@ namespace cspcc
     // Name the indices and locals, write the body, then put the declarations above it.
     std::string EmitProcessWriter::write(int indent)
     {
-        for (data::DataSymbol *symbol : m_variant.m_index_symbols) {
+        for (Symbol *symbol : m_variant.m_index_symbols) {
             symbol->m_ada = m_names.make(symbol->m_name);
             m_declarations.push_back(symbol->m_ada + " : constant Integer := " + m_family.m_ada +
                                      "_Idx (Id, " + std::to_string(symbol->m_index_position) +
                                      ");");
         }
-        for (data::DataSymbol *symbol : m_variant.m_locals) {
+        for (Symbol *symbol : m_variant.m_locals) {
             symbol->m_ada = m_names.make(symbol->m_name);
             std::string type(EmitExpressionWriter::ada_type(symbol->m_base));
             std::string value(EmitExpressionWriter::default_value(symbol->m_base));
@@ -104,10 +104,10 @@ namespace cspcc
 
     // Write each command, then null if none wrote a statement.
     void EmitProcessWriter::emit_commands(
-        const std::vector<std::unique_ptr<data::DataCommand>> &commands)
+        const std::vector<std::unique_ptr<Command>> &commands)
     {
         size_t before = m_body.size();
-        for (const std::unique_ptr<data::DataCommand> &command : commands) {
+        for (const std::unique_ptr<Command> &command : commands) {
             emit_command(*command);
         }
         if (m_body.size() == before) {
@@ -116,48 +116,48 @@ namespace cspcc
     }
 
     // Write a command by its kind; declarations are already above the block.
-    void EmitProcessWriter::emit_command(const data::DataCommand &command)
+    void EmitProcessWriter::emit_command(const Command &command)
     {
         switch (command.m_kind) {
-            case data::DataCommandKind::Skip:
+            case CommandKind::Skip:
                 line("null;");
                 return;
-            case data::DataCommandKind::Declare:
+            case CommandKind::Declare:
                 return;
-            case data::DataCommandKind::Assign:
+            case CommandKind::Assign:
                 emit_assignment(command);
                 return;
-            case data::DataCommandKind::Input:
+            case CommandKind::Input:
                 emit_input(command);
                 return;
-            case data::DataCommandKind::Output:
+            case CommandKind::Output:
                 emit_output(command);
                 return;
-            case data::DataCommandKind::Macro:
+            case CommandKind::Macro:
                 emit_hook(command);
                 return;
-            case data::DataCommandKind::Block:
+            case CommandKind::Block:
                 emit_commands(command.m_body);
                 return;
-            case data::DataCommandKind::Alternative:
-            case data::DataCommandKind::Repetitive:
+            case CommandKind::Alternative:
+            case CommandKind::Repetitive:
                 emit_alternative(command);
                 return;
         }
     }
 
     // Assign one value, or a tuple's values all at once through temporaries.
-    void EmitProcessWriter::emit_assignment(const data::DataCommand &command)
+    void EmitProcessWriter::emit_assignment(const Command &command)
     {
         if (command.m_targets.size() == 1) {
-            const data::DataExpression &target = *command.m_targets[0];
+            const Expression &target = *command.m_targets[0];
             line(m_expressions.render(target) +
                  " := " + m_expressions.render(*command.m_values[0], target.m_type) + ";");
             return;
         }
         std::vector<std::string> temporaries;
         for (size_t i = 0; i < command.m_values.size(); i++) {
-            data::DataTypeBase base = command.m_targets[i]->m_type;
+            BaseType base = command.m_targets[i]->m_type;
             temporaries.push_back(local(
                 "Tmp", std::string(EmitExpressionWriter::ada_type(base)) +
                            " := " + std::string(EmitExpressionWriter::default_value(base)) + ";"));
@@ -170,7 +170,7 @@ namespace cspcc
     }
 
     // Wait for the input, failing if its source terminates first.
-    void EmitProcessWriter::emit_input(const data::DataCommand &command)
+    void EmitProcessWriter::emit_input(const Command &command)
     {
         const std::string &source = peer();
         line(source + " := " + process_id(command.m_process) + ";");
@@ -195,10 +195,10 @@ namespace cspcc
     }
 
     // Call the receiver's entry, failing if the receiver has terminated.
-    void EmitProcessWriter::emit_output(const data::DataCommand &command)
+    void EmitProcessWriter::emit_output(const Command &command)
     {
         const std::string &target = peer();
-        const data::DataEntry &entry = *command.m_entry;
+        const Entry &entry = *command.m_entry;
         std::vector<std::string> args;
         for (size_t i = 0; i < command.m_parts.size(); i++) {
             args.push_back(m_expressions.render(*command.m_parts[i], entry.m_types[i]));
@@ -219,12 +219,12 @@ namespace cspcc
     }
 
     // Call R.Hook with the hook's name and the values of its arguments.
-    void EmitProcessWriter::emit_hook(const data::DataCommand &command)
+    void EmitProcessWriter::emit_hook(const Command &command)
     {
         std::string text = "\"" + command.m_name;
         if (command.m_has_parens) {
             std::vector<std::string> images;
-            for (const std::unique_ptr<data::DataExpression> &arg : command.m_args) {
+            for (const std::unique_ptr<Expression> &arg : command.m_args) {
                 images.push_back("R.Img (" + m_expressions.render(*arg) + ")");
             }
             text += images.empty() ? "()\"" : "(\" & " + join(images, " & \", \" & ") + " & \")\"";
@@ -236,9 +236,9 @@ namespace cspcc
 
     // Unroll the guards and evaluate them; choose at random among the true guards whose input
     // has a caller waiting, or else wait for the first input; then run the commands.
-    void EmitProcessWriter::emit_alternative(const data::DataCommand &command)
+    void EmitProcessWriter::emit_alternative(const Command &command)
     {
-        bool repetitive = command.m_kind == data::DataCommandKind::Repetitive;
+        bool repetitive = command.m_kind == CommandKind::Repetitive;
         const auto &guards = command.m_guards;
         if (guards.size() == 1 && !guards[0]->m_input && guards[0]->m_ranges.empty()) {
             emit_plain_alternative(command);
@@ -249,7 +249,7 @@ namespace cspcc
         std::vector<long long> bases;
         long long total = 0;
         std::string inputMask;
-        for (const std::unique_ptr<data::DataGuardedCommand> &guard : guards) {
+        for (const std::unique_ptr<GuardedCommand> &guard : guards) {
             long long count = unrolled(*guard);
             bases.push_back(total + 1);
             std::string choice =
@@ -274,11 +274,11 @@ namespace cspcc
             m_indent++;
         }
         for (size_t g = 0; g < guards.size(); g++) {
-            const data::DataGuardedCommand &guard = *guards[g];
+            const GuardedCommand &guard = *guards[g];
             int loops = 0;
             std::string offset = std::to_string(bases[g]);
             long long stride = unrolled(guard);
-            for (const std::unique_ptr<data::DataRange> &range : guard.m_ranges) {
+            for (const std::unique_ptr<Range> &range : guard.m_ranges) {
                 long long count = range->m_last - range->m_first + 1;
                 stride /= count;
                 std::string counter = m_names.make("L" + suffix);
@@ -314,13 +314,13 @@ namespace cspcc
             }
         }
         bool anyInput = false;
-        for (const std::unique_ptr<data::DataGuardedCommand> &guard : guards) {
+        for (const std::unique_ptr<GuardedCommand> &guard : guards) {
             anyInput = anyInput || guard->m_input;
         }
         auto accepts = [&](auto when) {
             bool first = true;
             for (size_t g = 0; g < guards.size(); g++) {
-                const data::DataGuardedCommand &guard = *guards[g];
+                const GuardedCommand &guard = *guards[g];
                 if (!guard.m_input) {
                     continue;
                 }
@@ -328,7 +328,7 @@ namespace cspcc
                 for (long long k = 0; k < count; k++) {
                     long long rest = k;
                     long long stride = count;
-                    for (const std::unique_ptr<data::DataRange> &range : guard.m_ranges) {
+                    for (const std::unique_ptr<Range> &range : guard.m_ranges) {
                         long long size = range->m_last - range->m_first + 1;
                         stride /= size;
                         m_expressions.substitute(
@@ -347,7 +347,7 @@ namespace cspcc
                     line(selected + " := " + index + ";");
                     m_indent--;
                 }
-                for (const std::unique_ptr<data::DataRange> &range : guard.m_ranges) {
+                for (const std::unique_ptr<Range> &range : guard.m_ranges) {
                     m_expressions.forget(range->m_symbol);
                 }
             }
@@ -418,7 +418,7 @@ namespace cspcc
         line("case " + selected + " is");
         m_indent++;
         for (size_t g = 0; g < guards.size(); g++) {
-            const data::DataGuardedCommand &guard = *guards[g];
+            const GuardedCommand &guard = *guards[g];
             long long count = unrolled(guard);
             line("when " +
                  (count == 1
@@ -427,7 +427,7 @@ namespace cspcc
                  " =>");
             m_indent++;
             long long stride = count;
-            for (const std::unique_ptr<data::DataRange> &range : guard.m_ranges) {
+            for (const std::unique_ptr<Range> &range : guard.m_ranges) {
                 long long size = range->m_last - range->m_first + 1;
                 stride /= size;
                 line(range->m_symbol->m_ada +
@@ -449,11 +449,11 @@ namespace cspcc
     }
 
     // Write [ b -> c ] as if b then c, and *[ b -> c ] as a loop that exits when b is false.
-    void EmitProcessWriter::emit_plain_alternative(const data::DataCommand &command)
+    void EmitProcessWriter::emit_plain_alternative(const Command &command)
     {
-        const data::DataGuardedCommand &guard = *command.m_guards[0];
+        const GuardedCommand &guard = *command.m_guards[0];
         std::string test = condition(guard);
-        if (command.m_kind == data::DataCommandKind::Repetitive) {
+        if (command.m_kind == CommandKind::Repetitive) {
             std::string label = m_names.make("Rep_" + std::to_string(++m_alternatives));
             line(label + " : loop");
             m_indent++;
@@ -476,9 +476,9 @@ namespace cspcc
     }
 
     // Accept from a source, store the parts in the targets and trace the message.
-    void EmitProcessWriter::emit_accept(const data::DataCommand &input, std::string_view source)
+    void EmitProcessWriter::emit_accept(const Command &input, std::string_view source)
     {
-        const data::DataEntry &entry = *input.m_entry;
+        const Entry &entry = *input.m_entry;
         std::vector<std::string> parameters;
         std::vector<std::string> names;
         for (size_t i = 0; i < entry.m_types.size(); i++) {
@@ -500,10 +500,10 @@ namespace cspcc
     }
 
     // Join a guard's conditions.
-    std::string EmitProcessWriter::condition(const data::DataGuardedCommand &guard)
+    std::string EmitProcessWriter::condition(const GuardedCommand &guard)
     {
         std::vector<std::string> tests;
-        for (const data::DataGuardElement &element : guard.m_elements) {
+        for (const GuardElement &element : guard.m_elements) {
             if (element.m_condition) {
                 tests.push_back(m_expressions.render(*element.m_condition));
             }
@@ -512,7 +512,7 @@ namespace cspcc
     }
 
     // Render has(1, 2), (1, 2) or 1 as an Ada String expression.
-    std::string EmitProcessWriter::message_image(const data::DataCommand &command,
+    std::string EmitProcessWriter::message_image(const Command &command,
                                                  const std::vector<std::string> &values)
     {
         std::vector<std::string> images;
@@ -531,17 +531,17 @@ namespace cspcc
     }
 
     // Call Family_Id with the process's subscripts.
-    std::string EmitProcessWriter::process_id(const data::DataProcessName &process)
+    std::string EmitProcessWriter::process_id(const ProcessName &process)
     {
         std::vector<std::string> args = {"Id"};
-        for (const std::unique_ptr<data::DataExpression> &subscript : process.m_subscripts) {
+        for (const std::unique_ptr<Expression> &subscript : process.m_subscripts) {
             args.push_back(m_expressions.render(*subscript));
         }
         return process.m_family->m_ada + "_Id (" + join(args, ", ") + ")";
     }
 
     // Spell a position as file:line:column, ready to go inside an Ada string.
-    std::string EmitProcessWriter::location(const data::DataLocation &location) const
+    std::string EmitProcessWriter::location(const Location &location) const
     {
         std::string text;
         for (char c : m_source) {

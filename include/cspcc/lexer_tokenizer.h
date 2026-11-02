@@ -3,9 +3,7 @@
 #ifndef CSPCC_LEXER_TOKENIZER_H
 #define CSPCC_LEXER_TOKENIZER_H
 
-#include "cspcc/data/data_location.h"
-#include "cspcc/data/data_token.h"
-#include "cspcc/data/data_token_kind.h"
+#include "cspcc/token.h"
 #include "cspcc/diagnostics_engine.h"
 
 #include <cstddef>
@@ -24,13 +22,13 @@ namespace cspcc
         LexerTokenizer(std::string_view source, DiagnosticsEngine &diagnostics);
 
         // Split the whole source.
-        std::vector<data::DataToken> tokenize();
+        std::vector<Token> tokenize();
 
         // Name a kind of token for diagnostics.
-        static std::string_view kind_name(data::DataTokenKind kind);
+        static std::string_view kind_name(TokenKind kind);
 
         // Print tokens one per line, for --dump-tokens.
-        static void dump(const std::vector<data::DataToken> &tokens, std::ostream &stream);
+        static void dump(const std::vector<Token> &tokens, std::ostream &stream);
 
     private:
         // Look at a byte ahead of the current position.
@@ -40,28 +38,28 @@ namespace cspcc
         void advance(size_t count = 1);
 
         // Return the current position.
-        data::DataLocation here() const;
+        Location here() const;
 
         // Add a token spelled by the bytes at the current position and move past them.
-        void push(data::DataTokenKind kind, const data::DataLocation &location, size_t count);
+        void push(TokenKind kind, const Location &location, size_t count);
 
         // Decode the UTF-8 character at the current position.
         bool decode(unsigned &codePoint, size_t &length) const;
 
         // Scan an identifier or a keyword.
-        void scan_identifier(const data::DataLocation &location);
+        void scan_identifier(const Location &location);
 
         // Scan an integer or a real number.
-        void scan_number(const data::DataLocation &location);
+        void scan_number(const Location &location);
 
         // Scan a character literal or a one-character string.
-        void scan_character(const data::DataLocation &location);
+        void scan_character(const Location &location);
 
         // Scan a non-ASCII character: one of CSP's symbols, or an error.
-        void scan_symbol(const data::DataLocation &location);
+        void scan_symbol(const Location &location);
 
         // Scan an ASCII operator or punctuation mark.
-        void scan_punctuation(const data::DataLocation &location);
+        void scan_punctuation(const Location &location);
 
         // Skip a comment, if one starts at the current position.
         bool skip_comment();
@@ -82,7 +80,7 @@ namespace cspcc
         int m_column = 1;
 
         // Tokens scanned so far.
-        std::vector<data::DataToken> m_tokens;
+        std::vector<Token> m_tokens;
     };
 
 }

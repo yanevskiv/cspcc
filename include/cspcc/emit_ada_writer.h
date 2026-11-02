@@ -3,8 +3,7 @@
 #ifndef CSPCC_EMIT_ADA_WRITER_H
 #define CSPCC_EMIT_ADA_WRITER_H
 
-#include "cspcc/data/data_family.h"
-#include "cspcc/data/data_program.h"
+#include "cspcc/program.h"
 #include "cspcc/emit_name_table.h"
 
 #include <map>
@@ -20,7 +19,7 @@ namespace cspcc
     {
     public:
         // Prepare to write a program.
-        EmitAdaWriter(data::DataProgram &program, std::string unit, std::string source);
+        EmitAdaWriter(Program &program, std::string unit, std::string source);
 
         // Write the whole procedure.
         std::string write();
@@ -42,13 +41,13 @@ namespace cspcc
         void write_constants();
 
         // Write a family's task type, its table of processes and its lookups.
-        void write_family_spec(const data::DataFamily &family);
+        void write_family_spec(const Family &family);
 
         // Write a family's task body.
-        void write_family_body(const data::DataFamily &family);
+        void write_family_body(const Family &family);
 
         // Write the aggregate mapping subscripts to process numbers.
-        std::string map_aggregate(const data::DataFamily &family,
+        std::string map_aggregate(const Family &family,
                                   const std::map<std::vector<long long>, int> &pids,
                                   std::vector<long long> &prefix) const;
 
@@ -56,7 +55,7 @@ namespace cspcc
         void write_main();
 
         // Program being written.
-        data::DataProgram &m_program;
+        Program &m_program;
 
         // Name of the Ada main procedure.
         std::string m_unit;

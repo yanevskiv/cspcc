@@ -3,7 +3,7 @@
 #ifndef CSPCC_DRIVER_APP_H
 #define CSPCC_DRIVER_APP_H
 
-#include "cspcc/data/data_program.h"
+#include "cspcc/program.h"
 #include "cspcc/driver_options.h"
 
 #include <filesystem>
@@ -29,7 +29,7 @@ namespace cspcc
         int translate(const std::string &source);
 
         // Write the Ada main procedure and, unless --no-runtime, the runtime next to it.
-        int emit(data::DataProgram &program);
+        int emit(Program &program);
 
         // Read a whole file.
         static bool read_file(const std::string &path, std::string &text);

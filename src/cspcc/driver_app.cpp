@@ -60,7 +60,7 @@ namespace cspcc
         DiagnosticsEngine diagnostics(m_options.input(), source, std::cerr);
         diagnostics.set_warnings(m_options.warnings_enabled(), m_options.warnings_as_errors());
         LexerTokenizer tokenizer(source, diagnostics);
-        std::vector<data::DataToken> tokens = tokenizer.tokenize();
+        std::vector<Token> tokens = tokenizer.tokenize();
         if (m_options.dumps_tokens()) {
             LexerTokenizer::dump(tokens, std::cout);
             return diagnostics.error_count() ? 1 : 0;
@@ -69,12 +69,12 @@ namespace cspcc
             return 1;
         }
         ParserGrammar parser(tokens, diagnostics);
-        std::unique_ptr<data::DataAst> ast = parser.parse_program();
+        std::unique_ptr<Ast> ast = parser.parse_program();
         if (!ast) {
             return 1;
         }
         SemaChecker checker(diagnostics);
-        std::unique_ptr<data::DataProgram> program = checker.check(*ast, m_options.defines());
+        std::unique_ptr<Program> program = checker.check(*ast, m_options.defines());
         if (!program) {
             return 1;
         }
@@ -82,7 +82,7 @@ namespace cspcc
     }
 
     // Name the output after the input unless -o names it, then write the files.
-    int DriverApp::emit(data::DataProgram &program)
+    int DriverApp::emit(Program &program)
     {
         std::filesystem::path input(m_options.input());
         std::filesystem::path output(m_options.output());

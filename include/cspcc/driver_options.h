@@ -3,7 +3,7 @@
 #ifndef CSPCC_DRIVER_OPTIONS_H
 #define CSPCC_DRIVER_OPTIONS_H
 
-#include "cspcc/data/data_define.h"
+#include "cspcc/program.h"
 
 #include <ostream>
 #include <span>
@@ -31,7 +31,7 @@ namespace cspcc
         const std::string &output() const;
 
         // Return the constants given with -D.
-        const std::vector<data::DataDefine> &defines() const;
+        const std::vector<Define> &defines() const;
 
         // Report whether help was requested.
         bool wants_help() const;
@@ -62,7 +62,7 @@ namespace cspcc
         std::string m_output;
 
         // Constants given with -D.
-        std::vector<data::DataDefine> m_defines;
+        std::vector<Define> m_defines;
 
         // Whether help was requested.
         bool m_wants_help = false;

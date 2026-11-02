@@ -3,7 +3,7 @@
 #ifndef CSPCC_DIAGNOSTICS_ENGINE_H
 #define CSPCC_DIAGNOSTICS_ENGINE_H
 
-#include "cspcc/data/data_location.h"
+#include "cspcc/token.h"
 
 #include <ostream>
 #include <string>
@@ -21,15 +21,15 @@ namespace cspcc
         DiagnosticsEngine(std::string path, std::string_view source, std::ostream &stream);
 
         // Report an error.
-        void error(const data::DataLocation &location, std::string_view code,
+        void error(const Location &location, std::string_view code,
                    std::string_view message);
 
         // Report a warning, unless warnings are off.
-        void warning(const data::DataLocation &location, std::string_view code,
+        void warning(const Location &location, std::string_view code,
                      std::string_view message);
 
         // Add a note to the last error or warning.
-        void note(const data::DataLocation &location, std::string_view message);
+        void note(const Location &location, std::string_view message);
 
         // Turn warnings off or into errors.
         void set_warnings(bool enabled, bool asErrors);
@@ -45,11 +45,11 @@ namespace cspcc
 
     private:
         // Print one diagnostic.
-        void print(const data::DataLocation &location, std::string_view level,
+        void print(const Location &location, std::string_view level,
                    std::string_view code, std::string_view message);
 
         // Print a location's line with a caret under its column.
-        void quote(const data::DataLocation &location);
+        void quote(const Location &location);
 
         // Name the diagnostics print.
         std::string m_path;

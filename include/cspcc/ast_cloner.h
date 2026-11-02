@@ -3,10 +3,7 @@
 #ifndef CSPCC_AST_CLONER_H
 #define CSPCC_AST_CLONER_H
 
-#include "cspcc/data/data_command.h"
-#include "cspcc/data/data_expression.h"
-#include "cspcc/data/data_guarded_command.h"
-#include "cspcc/data/data_range.h"
+#include "cspcc/ast.h"
 
 #include <memory>
 #include <vector>
@@ -19,27 +16,27 @@ namespace cspcc
     {
     public:
         // Copy an expression.
-        static std::unique_ptr<data::DataExpression>
-        clone_expression(const data::DataExpression *expression);
+        static std::unique_ptr<Expression>
+        clone_expression(const Expression *expression);
 
         // Copy a command.
-        static std::unique_ptr<data::DataCommand> clone_command(const data::DataCommand *command);
+        static std::unique_ptr<Command> clone_command(const Command *command);
 
         // Copy a list of commands.
-        static std::vector<std::unique_ptr<data::DataCommand>>
-        clone_commands(const std::vector<std::unique_ptr<data::DataCommand>> &commands);
+        static std::vector<std::unique_ptr<Command>>
+        clone_commands(const std::vector<std::unique_ptr<Command>> &commands);
 
     private:
         // Copy a list of expressions.
-        static std::vector<std::unique_ptr<data::DataExpression>>
-        clone_expressions(const std::vector<std::unique_ptr<data::DataExpression>> &expressions);
+        static std::vector<std::unique_ptr<Expression>>
+        clone_expressions(const std::vector<std::unique_ptr<Expression>> &expressions);
 
         // Copy a range.
-        static std::unique_ptr<data::DataRange> clone_range(const data::DataRange &range);
+        static std::unique_ptr<Range> clone_range(const Range &range);
 
         // Copy a guarded command.
-        static std::unique_ptr<data::DataGuardedCommand>
-        clone_guarded(const data::DataGuardedCommand &guard);
+        static std::unique_ptr<GuardedCommand>
+        clone_guarded(const GuardedCommand &guard);
     };
 
 }

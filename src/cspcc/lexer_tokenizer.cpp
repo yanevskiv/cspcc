@@ -19,21 +19,21 @@ namespace cspcc
         constexpr long long lexerIntMax = 2147483647LL;
 
         // Keywords, all lower case.
-        const std::map<std::string, data::DataTokenKind, std::less<>> lexerKeywords = {
-            {"skip", data::DataTokenKind::Skip},   {"true", data::DataTokenKind::True},
-            {"false", data::DataTokenKind::False}, {"mod", data::DataTokenKind::Mod},
-            {"div", data::DataTokenKind::Div},     {"and", data::DataTokenKind::And},
-            {"or", data::DataTokenKind::Or},       {"not", data::DataTokenKind::Not},
-            {"const", data::DataTokenKind::Const},
+        const std::map<std::string, TokenKind, std::less<>> lexerKeywords = {
+            {"skip", TokenKind::Skip},   {"true", TokenKind::True},
+            {"false", TokenKind::False}, {"mod", TokenKind::Mod},
+            {"div", TokenKind::Div},     {"and", TokenKind::And},
+            {"or", TokenKind::Or},       {"not", TokenKind::Not},
+            {"const", TokenKind::Const},
         };
 
         // Tokens spelled with one non-ASCII character, as on the slides.
-        const std::map<unsigned, data::DataTokenKind> lexerSymbols = {
-            {0x2192, data::DataTokenKind::Arrow},     {0x25A1, data::DataTokenKind::Box},
-            {0x2016, data::DataTokenKind::Parallel},  {0x2260, data::DataTokenKind::NotEqual},
-            {0x2264, data::DataTokenKind::LessEqual}, {0x2265, data::DataTokenKind::GreaterEqual},
-            {0x00AC, data::DataTokenKind::Not},       {0x2227, data::DataTokenKind::And},
-            {0x2228, data::DataTokenKind::Or},
+        const std::map<unsigned, TokenKind> lexerSymbols = {
+            {0x2192, TokenKind::Arrow},     {0x25A1, TokenKind::Box},
+            {0x2016, TokenKind::Parallel},  {0x2260, TokenKind::NotEqual},
+            {0x2264, TokenKind::LessEqual}, {0x2265, TokenKind::GreaterEqual},
+            {0x00AC, TokenKind::Not},       {0x2227, TokenKind::And},
+            {0x2228, TokenKind::Or},
         };
 
         // Format a code point as U+XXXX.
@@ -54,7 +54,7 @@ namespace cspcc
     }
 
     // Split the whole source, skipping blanks and comments.
-    std::vector<data::DataToken> LexerTokenizer::tokenize()
+    std::vector<Token> LexerTokenizer::tokenize()
     {
         while (m_position < m_source.size()) {
             unsigned char c = peek();
@@ -65,7 +65,7 @@ namespace cspcc
             if (skip_comment()) {
                 continue;
             }
-            data::DataLocation location = here();
+            Location location = here();
             if (std::isalpha(c)) {
                 scan_identifier(location);
             } else if (std::isdigit(c)) {
@@ -78,110 +78,110 @@ namespace cspcc
                 scan_punctuation(location);
             }
         }
-        data::DataToken eof;
+        Token eof;
         eof.m_location = here();
         m_tokens.push_back(eof);
         return std::move(m_tokens);
     }
 
     // Name a kind of token.
-    std::string_view LexerTokenizer::kind_name(data::DataTokenKind kind)
+    std::string_view LexerTokenizer::kind_name(TokenKind kind)
     {
         switch (kind) {
-            case data::DataTokenKind::Eof:
+            case TokenKind::Eof:
                 return "end of file";
-            case data::DataTokenKind::Identifier:
+            case TokenKind::Identifier:
                 return "identifier";
-            case data::DataTokenKind::Integer:
+            case TokenKind::Integer:
                 return "integer";
-            case data::DataTokenKind::Real:
+            case TokenKind::Real:
                 return "real number";
-            case data::DataTokenKind::Character:
+            case TokenKind::Character:
                 return "character";
-            case data::DataTokenKind::LeftBracket:
+            case TokenKind::LeftBracket:
                 return "'['";
-            case data::DataTokenKind::RightBracket:
+            case TokenKind::RightBracket:
                 return "']'";
-            case data::DataTokenKind::LeftParen:
+            case TokenKind::LeftParen:
                 return "'('";
-            case data::DataTokenKind::RightParen:
+            case TokenKind::RightParen:
                 return "')'";
-            case data::DataTokenKind::ColonColon:
+            case TokenKind::ColonColon:
                 return "'::'";
-            case data::DataTokenKind::Colon:
+            case TokenKind::Colon:
                 return "':'";
-            case data::DataTokenKind::Assign:
+            case TokenKind::Assign:
                 return "':='";
-            case data::DataTokenKind::Parallel:
+            case TokenKind::Parallel:
                 return "'‖' or '||'";
-            case data::DataTokenKind::Box:
+            case TokenKind::Box:
                 return "'□' or '[]'";
-            case data::DataTokenKind::Arrow:
+            case TokenKind::Arrow:
                 return "'→' or '->'";
-            case data::DataTokenKind::Bang:
+            case TokenKind::Bang:
                 return "'!'";
-            case data::DataTokenKind::Question:
+            case TokenKind::Question:
                 return "'?'";
-            case data::DataTokenKind::Semicolon:
+            case TokenKind::Semicolon:
                 return "';'";
-            case data::DataTokenKind::Comma:
+            case TokenKind::Comma:
                 return "','";
-            case data::DataTokenKind::DotDot:
+            case TokenKind::DotDot:
                 return "'..'";
-            case data::DataTokenKind::Equal:
+            case TokenKind::Equal:
                 return "'='";
-            case data::DataTokenKind::NotEqual:
+            case TokenKind::NotEqual:
                 return "'<>'";
-            case data::DataTokenKind::Less:
+            case TokenKind::Less:
                 return "'<'";
-            case data::DataTokenKind::LessEqual:
+            case TokenKind::LessEqual:
                 return "'<='";
-            case data::DataTokenKind::Greater:
+            case TokenKind::Greater:
                 return "'>'";
-            case data::DataTokenKind::GreaterEqual:
+            case TokenKind::GreaterEqual:
                 return "'>='";
-            case data::DataTokenKind::Plus:
+            case TokenKind::Plus:
                 return "'+'";
-            case data::DataTokenKind::Minus:
+            case TokenKind::Minus:
                 return "'-'";
-            case data::DataTokenKind::Star:
+            case TokenKind::Star:
                 return "'*'";
-            case data::DataTokenKind::Slash:
+            case TokenKind::Slash:
                 return "'/'";
-            case data::DataTokenKind::Skip:
+            case TokenKind::Skip:
                 return "'skip'";
-            case data::DataTokenKind::True:
+            case TokenKind::True:
                 return "'true'";
-            case data::DataTokenKind::False:
+            case TokenKind::False:
                 return "'false'";
-            case data::DataTokenKind::Mod:
+            case TokenKind::Mod:
                 return "'mod'";
-            case data::DataTokenKind::Div:
+            case TokenKind::Div:
                 return "'div'";
-            case data::DataTokenKind::And:
+            case TokenKind::And:
                 return "'and'";
-            case data::DataTokenKind::Or:
+            case TokenKind::Or:
                 return "'or'";
-            case data::DataTokenKind::Not:
+            case TokenKind::Not:
                 return "'not'";
-            case data::DataTokenKind::Const:
+            case TokenKind::Const:
                 return "'const'";
         }
         return "token";
     }
 
     // Print each token's position, kind and value.
-    void LexerTokenizer::dump(const std::vector<data::DataToken> &tokens, std::ostream &stream)
+    void LexerTokenizer::dump(const std::vector<Token> &tokens, std::ostream &stream)
     {
-        for (const data::DataToken &token : tokens) {
+        for (const Token &token : tokens) {
             stream << token.m_location.m_line << ':' << token.m_location.m_column << ' '
                    << kind_name(token.m_kind);
-            if (token.m_kind == data::DataTokenKind::Identifier) {
+            if (token.m_kind == TokenKind::Identifier) {
                 stream << ' ' << token.m_text;
-            } else if (token.m_kind == data::DataTokenKind::Integer ||
-                       token.m_kind == data::DataTokenKind::Character) {
+            } else if (token.m_kind == TokenKind::Integer ||
+                       token.m_kind == TokenKind::Character) {
                 stream << ' ' << token.m_integer;
-            } else if (token.m_kind == data::DataTokenKind::Real) {
+            } else if (token.m_kind == TokenKind::Real) {
                 stream << ' ' << token.m_real;
             }
             stream << '\n';
@@ -210,19 +210,19 @@ namespace cspcc
     }
 
     // Return the current position.
-    data::DataLocation LexerTokenizer::here() const
+    Location LexerTokenizer::here() const
     {
-        data::DataLocation location;
+        Location location;
         location.m_line = m_line;
         location.m_column = m_column;
         return location;
     }
 
     // Add a token and move past its bytes.
-    void LexerTokenizer::push(data::DataTokenKind kind, const data::DataLocation &location,
+    void LexerTokenizer::push(TokenKind kind, const Location &location,
                               size_t count)
     {
-        data::DataToken token;
+        Token token;
         token.m_kind = kind;
         token.m_location = location;
         token.m_text = std::string(m_source.substr(m_position, count));
@@ -264,7 +264,7 @@ namespace cspcc
     }
 
     // Scan an identifier or a keyword, rejecting a non-ASCII letter glued to it.
-    void LexerTokenizer::scan_identifier(const data::DataLocation &location)
+    void LexerTokenizer::scan_identifier(const Location &location)
     {
         size_t count = 0;
         while (std::isalnum(peek(count)) || peek(count) == '_') {
@@ -272,7 +272,7 @@ namespace cspcc
         }
         std::string word(m_source.substr(m_position, count));
         auto keyword = lexerKeywords.find(word);
-        push(keyword == lexerKeywords.end() ? data::DataTokenKind::Identifier : keyword->second,
+        push(keyword == lexerKeywords.end() ? TokenKind::Identifier : keyword->second,
              location, count);
         if (peek() >= 0x80) {
             unsigned codePoint = 0;
@@ -287,7 +287,7 @@ namespace cspcc
     }
 
     // Scan a number; '..' after digits ends an integer, so 1..5 is a range.
-    void LexerTokenizer::scan_number(const data::DataLocation &location)
+    void LexerTokenizer::scan_number(const Location &location)
     {
         size_t count = 0;
         while (std::isdigit(peek(count))) {
@@ -312,8 +312,8 @@ namespace cspcc
             }
         }
         std::string text(m_source.substr(m_position, count));
-        push(real ? data::DataTokenKind::Real : data::DataTokenKind::Integer, location, count);
-        data::DataToken &token = m_tokens.back();
+        push(real ? TokenKind::Real : TokenKind::Integer, location, count);
+        Token &token = m_tokens.back();
         if (real) {
             token.m_real = std::strtod(text.c_str(), nullptr);
         } else {
@@ -336,11 +336,11 @@ namespace cspcc
     }
 
     // Scan 'c', or "c" as on the slides; ''' is the quote itself.
-    void LexerTokenizer::scan_character(const data::DataLocation &location)
+    void LexerTokenizer::scan_character(const Location &location)
     {
         unsigned char quote = peek();
         if (quote == '\'' && peek(1) == '\'' && peek(2) == '\'') {
-            push(data::DataTokenKind::Character, location, 3);
+            push(TokenKind::Character, location, 3);
             m_tokens.back().m_integer = '\'';
             return;
         }
@@ -369,12 +369,12 @@ namespace cspcc
             advance(count + 1);
             return;
         }
-        push(data::DataTokenKind::Character, location, count + 1);
+        push(TokenKind::Character, location, count + 1);
         m_tokens.back().m_integer = static_cast<unsigned char>(body[0]);
     }
 
     // Scan one of the slides' symbols, or report the character, with a hint for look-alikes.
-    void LexerTokenizer::scan_symbol(const data::DataLocation &location)
+    void LexerTokenizer::scan_symbol(const Location &location)
     {
         unsigned codePoint = 0;
         size_t length = 1;
@@ -401,9 +401,9 @@ namespace cspcc
     }
 
     // Scan an ASCII operator, preferring the longest spelling.
-    void LexerTokenizer::scan_punctuation(const data::DataLocation &location)
+    void LexerTokenizer::scan_punctuation(const Location &location)
     {
-        using Kind = data::DataTokenKind;
+        using Kind = TokenKind;
         unsigned char c = peek();
         unsigned char next = peek(1);
         switch (c) {

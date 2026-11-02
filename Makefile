@@ -10,7 +10,7 @@ vpath %.cpp src src/cspcc
 
 SRCS     = $(wildcard src/*.cpp src/cspcc/*.cpp)
 OBJS     = $(patsubst %.cpp,$(ODIR)/%.o,$(notdir $(SRCS)))
-HEADERS  = $(wildcard include/cspcc/*.h include/cspcc/data/*.h)
+HEADERS  = $(wildcard include/cspcc/*.h)
 TESTS    = $(wildcard tests/lang/*.csp tests/errs/*.csp tests/examples/*.csp)
 EXAMPLES = $(patsubst %.csp,%,$(wildcard examples/*.csp))
 
