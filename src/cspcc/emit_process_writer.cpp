@@ -256,7 +256,8 @@ namespace cspcc
         line("R.Hook (Id, " + text + ");");
     }
 
-    // Unroll the guards, evaluate them, select one, then run its commands.
+    // Unroll the guards and evaluate them; choose at random among the true guards whose input
+    // has a caller waiting, or else wait for the first input; then run the commands.
     void EmitProcessWriter::emit_alternative(const data::DataCommand &command)
     {
         bool repetitive = command.m_kind == data::DataCommandKind::Repetitive;
@@ -270,7 +271,6 @@ namespace cspcc
         std::vector<long long> bases;
         long long total = 0;
         std::string inputMask;
-        std::string pureMask;
         for (const std::unique_ptr<data::DataGuardedCommand> &guard : guards) {
             long long count = unrolled(*guard);
             bases.push_back(total + 1);
@@ -280,8 +280,6 @@ namespace cspcc
             bool input = guard->m_input != nullptr;
             inputMask +=
                 (inputMask.empty() ? "" : ", ") + choice + " => " + (input ? "True" : "False");
-            pureMask +=
-                (pureMask.empty() ? "" : ", ") + choice + " => " + (input ? "False" : "True");
             total += count;
         }
         std::string range = "(1 .. " + std::to_string(total) + ")";
@@ -290,8 +288,6 @@ namespace cspcc
         std::string sources = local("Src" + suffix, "R.Pid_Array " + range + " := (others => 1);");
         std::string inputs =
             local("Input" + suffix, "constant R.Bool_Array " + range + " := (" + inputMask + ");");
-        std::string pures =
-            local("Pure" + suffix, "constant R.Bool_Array " + range + " := (" + pureMask + ");");
         std::string selected = local("Sel" + suffix, "Natural := 0;");
         std::string slot = local("Slot" + suffix, "Positive := 1;");
         std::string label = repetitive ? m_names.make("Rep" + suffix) : "";
@@ -340,12 +336,10 @@ namespace cspcc
             }
         }
         bool anyInput = false;
-        bool anyPure = false;
         for (const std::unique_ptr<data::DataGuardedCommand> &guard : guards) {
             anyInput = anyInput || guard->m_input;
-            anyPure = anyPure || !guard->m_input;
         }
-        auto accepts = [&]() {
+        auto accepts = [&](auto when) {
             bool first = true;
             for (size_t g = 0; g < guards.size(); g++) {
                 const data::DataGuardedCommand &guard = *guards[g];
@@ -369,7 +363,7 @@ namespace cspcc
                         line("or");
                     }
                     first = false;
-                    line("when " + open + " (" + index + ") =>");
+                    line("when " + when(index) + " =>");
                     m_indent++;
                     emit_accept(*guard.m_input, sources + " (" + index + ")");
                     line(selected + " := " + index + ";");
@@ -380,14 +374,48 @@ namespace cspcc
                 }
             }
         };
-        auto wait = [&]() {
+        if (!anyInput) {
+            line(selected + " := R.Pick (" + open + ", " + open + ");");
+        } else {
+            std::string ready =
+                local("Ready" + suffix, "R.Bool_Array " + range + " := (others => False);");
+            std::string chosen = local("Chosen" + suffix, "Natural := 0;");
+            line(ready + " := " + open + ";");
+            for (size_t g = 0; g < guards.size(); g++) {
+                if (!guards[g]->m_input) {
+                    continue;
+                }
+                const std::string &entry = guards[g]->m_input->m_entry->m_ada;
+                for (long long k = 0; k < unrolled(*guards[g]); k++) {
+                    std::string index = std::to_string(bases[g] + k);
+                    line(ready + " (" + index + ") := " + ready + " (" + index + ") and then " +
+                         entry + " (" + sources + " (" + index + "))'Count > 0;");
+                }
+            }
+            line(selected + " := R.Pick (" + ready + ", " + ready + ");");
+            line("if " + selected + " /= 0 and then " + inputs + " (" + selected + ") then");
+            m_indent++;
+            line(chosen + " := " + selected + ";");
+            line(selected + " := 0;");
+            line("select");
+            m_indent++;
+            accepts([&](const std::string &index) {
+                return chosen + " = " + index;
+            });
+            m_indent--;
+            line("end select;");
+            m_indent--;
+            line("elsif " + selected + " = 0 and then R.Any (" + open + ", " + inputs + ") then");
+            m_indent++;
             line("R.Waiting (Id, \"alternative command at " + location(command.m_location) +
                  "\");");
             line("loop");
             m_indent++;
             line("select");
             m_indent++;
-            accepts();
+            accepts([&](const std::string &index) {
+                return open + " (" + index + ")";
+            });
             m_indent--;
             line("or");
             line("   delay R.Poll;");
@@ -398,30 +426,6 @@ namespace cspcc
             m_indent--;
             line("end loop;");
             line("R.Running (Id);");
-        };
-        line(selected + " := 0;");
-        if (anyPure && anyInput) {
-            line("if R.Any (" + open + ", " + pures + ") then");
-            m_indent++;
-            line("select");
-            m_indent++;
-            accepts();
-            m_indent--;
-            line("else");
-            line("   " + selected + " := R.Pick (" + open + ", " + pures + ");");
-            line("end select;");
-            m_indent--;
-            line("elsif R.Any (" + open + ", " + inputs + ") then");
-            m_indent++;
-            wait();
-            m_indent--;
-            line("end if;");
-        } else if (anyPure) {
-            line(selected + " := R.Pick (" + open + ", " + pures + ");");
-        } else {
-            line("if R.Any (" + open + ", " + inputs + ") then");
-            m_indent++;
-            wait();
             m_indent--;
             line("end if;");
         }
