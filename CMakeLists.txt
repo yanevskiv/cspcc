@@ -80,12 +80,11 @@ set(CSPCC_EXAMPLE_TARGETS)
 foreach(example IN LISTS CSPCC_EXAMPLES)
     get_filename_component(name "${example}" NAME_WE)
     set(dir "${CMAKE_BINARY_DIR}/examples/${name}")
+    file(MAKE_DIRECTORY "${dir}")
     add_custom_command(
         OUTPUT "${CMAKE_BINARY_DIR}/bin/${name}"
-        COMMAND "${CMAKE_COMMAND}" -E make_directory "${dir}"
         COMMAND cspcc -o "${dir}/${name}.adb" "${example}"
-        COMMAND "${CSPCC_GNATMAKE}" -q -D "${dir}" "${dir}/${name}.adb"
-                -o "${CMAKE_BINARY_DIR}/bin/${name}"
+        COMMAND "${CSPCC_GNATMAKE}" -q -gnat2022 "${name}.adb" -o "${CMAKE_BINARY_DIR}/bin/${name}"
         WORKING_DIRECTORY "${dir}"
         DEPENDS cspcc "${example}"
         VERBATIM
