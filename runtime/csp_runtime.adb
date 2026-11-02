@@ -382,10 +382,10 @@ package body Csp_Runtime is
       Dice.Roll (N, R);
       for K in Open'Range loop
          if Open (K) and then Mask (K) then
-            R := R - 1;
-            if R = 0 then
+            if R = 1 then
                return K;
             end if;
+            R := R - 1;
          end if;
       end loop;
       return 0;
