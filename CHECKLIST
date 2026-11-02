@@ -1,0 +1,80 @@
+Checklist
+
+Checklist toward Hoare's 1978 CSP as the lecture slides write it: the language, its translation into Ada, and the slides' programs.
+
+    Language
+
+        Lexical
+
+            - [x] the slides' symbols: → □ ‖ ≠ ≤ ≥ ¬ ∧ ∨
+            - [x] ASCII spellings: -> [] | || <> /= <= >=
+            - [x] integers, reals, characters, true and false
+            - [x] the slides' one-character strings ("A")
+            - [x] -- and // comments
+            - [x] a hint for Cyrillic look-alike letters
+
+        Processes
+
+            - [x] parallel commands of labeled processes
+            - [x] arrays of processes, X(i:1..n)
+            - [x] two subscripts, M(i:1..3, j:1..3)
+            - [x] families of several definitions, M(i:1..3, 0) and M(i:1..3, j:1..3)
+            - [x] fixed subscripts, fac(0)
+            - [x] processes defined at the top level, X::*[...]
+            - [ ] nested parallel commands
+
+        Declarations and commands
+
+            - [x] integer, real, character and boolean, and the slides' other names
+            - [x] arrays with constant bounds, also two-dimensional
+            - [x] declarations anywhere in a command list and in guards
+            - [x] assignment and tuple assignment
+            - [x] skip, blocks
+            - [x] alternative and repetitive commands
+            - [x] *[ commands ] with no guard
+            - [x] constants, and -D NAME=VALUE
+            - [x] macros, NAME:: commands, a bracketed body spliced
+            - [x] hooks, eat() and print(x), for whatever nothing defines
+            - [ ] structured values in variables, x := cons(a, b)
+            - [ ] arrays as messages
+
+        Communication
+
+            - [x] output and input of values
+            - [x] constructors and signals, has(n), wait()
+            - [x] tuples, X!(a, b)
+            - [x] array elements as targets, Producer(i)?buffer(in mod 10)
+            - [x] integers sent to inputs of reals
+            - [x] input guards with conditions and declarations
+            - [x] range prefixes anywhere in a guard, s > 0, (i:1..n) X(i)?wait()
+
+        Semantics
+
+            - [x] synchronous communication
+            - [x] a random choice among true guards
+            - [x] failure of an alternative command whose guards are false
+            - [x] distributed termination of repetitive commands
+            - [x] failure of a communication with a terminated process
+            - [x] deadlock detection
+
+    Translation
+
+            - [x] a task type per family, an entry family per message kind
+            - [x] select with unrolled alternatives for input guards
+            - [x] Ada names free of reserved words and case clashes
+            - [x] the runtime written next to the output
+            - [x] --trace, --quiet, --delay, --seed and --timeout
+
+    Examples
+
+            - [x] copy
+            - [x] squash, ** into ^
+            - [x] semaphore
+            - [x] producer and consumer
+            - [x] factorial
+            - [x] set
+            - [x] set with scan
+            - [x] set as an array of processes
+            - [x] matrix multiplication
+            - [x] dining philosophers
+            - [x] integral with a bag of tasks
