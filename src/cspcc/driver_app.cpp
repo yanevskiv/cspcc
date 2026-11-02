@@ -19,8 +19,10 @@
 
 // Project headers for the stages of a translation.
 #include "cspcc/driver_app.h"
+#include "cspcc/ast_printer.h"
 #include "cspcc/diagnostics_engine.h"
 #include "cspcc/lexer_tokenizer.h"
+#include "cspcc/parser_grammar.h"
 
 // Standard headers for files and streams.
 #include <fstream>
@@ -76,6 +78,19 @@ namespace cspcc
         std::vector<data::DataToken> tokens = tokenizer.tokenize();
         if (m_options.dumps_tokens()) {
             LexerTokenizer::dump(tokens, std::cout);
+            return diagnostics.error_count() ? 1 : 0;
+        }
+        if (diagnostics.error_count()) {
+            return 1;
+        }
+        ParserGrammar parser(tokens, diagnostics);
+        std::unique_ptr<data::DataAst> ast = parser.parse_program();
+        if (!ast) {
+            return 1;
+        }
+        if (m_options.dumps_ast()) {
+            AstPrinter(std::cout).print(*ast);
+            return 0;
         }
         return diagnostics.error_count() ? 1 : 0;
     }
