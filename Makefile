@@ -6,18 +6,17 @@ ODIR     = obj
 INCDIR   = -Iinclude
 JOBS     = $(shell nproc)
 
-vpath %.cpp src src/cspcc
-
-SRCS     = $(wildcard src/*.cpp src/cspcc/*.cpp)
-OBJS     = $(patsubst %.cpp,$(ODIR)/%.o,$(notdir $(SRCS)))
-HEADERS  = $(wildcard include/cspcc/*.h)
+SDIR     = src
+_OBJS    = diagnostics.o lexer.o ast.o parser.o checker.o emitter.o runtime.o options.o main.o
+OBJS     = $(patsubst %,$(ODIR)/%,$(_OBJS))
+HEADERS  = $(wildcard include/*.h)
 TESTS    = $(wildcard tests/lang/*.csp tests/errs/*.csp tests/examples/*.csp)
 EXAMPLES = $(patsubst %.csp,%,$(wildcard examples/*.csp))
 
 $(OUT): $(OBJS)
 	$(CXX) -o $@ $^
 
-$(ODIR)/%.o: %.cpp $(HEADERS) Makefile
+$(ODIR)/%.o: $(SDIR)/%.cpp $(HEADERS) Makefile
 	$(CXX) -c $(INCDIR) -o $@ $< $(CXXFLAGS)
 
 test: $(OUT)
