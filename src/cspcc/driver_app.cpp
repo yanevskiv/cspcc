@@ -23,6 +23,7 @@
 #include "cspcc/diagnostics_engine.h"
 #include "cspcc/lexer_tokenizer.h"
 #include "cspcc/parser_grammar.h"
+#include "cspcc/sema_checker.h"
 
 // Standard headers for files and streams.
 #include <fstream>
@@ -91,6 +92,11 @@ namespace cspcc
         if (m_options.dumps_ast()) {
             AstPrinter(std::cout).print(*ast);
             return 0;
+        }
+        SemaChecker checker(diagnostics);
+        std::unique_ptr<data::DataProgram> program = checker.check(*ast, m_options.defines());
+        if (!program) {
+            return 1;
         }
         return diagnostics.error_count() ? 1 : 0;
     }

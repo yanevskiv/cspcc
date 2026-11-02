@@ -93,6 +93,13 @@ namespace cspcc
          */
         const std::string &path() const;
 
+        /**
+         * Return the destination of the diagnostics.
+         *
+         * @return The stream given to the constructor.
+         */
+        std::ostream &stream() const;
+
     private:
         /**
          * Print one diagnostic.

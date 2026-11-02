@@ -96,6 +96,12 @@ namespace cspcc
         return m_path;
     }
 
+    // Return the destination of the diagnostics.
+    std::ostream &DiagnosticsEngine::stream() const
+    {
+        return m_stream;
+    }
+
     // Print the position, the level, the message and the code, then the quoted line.
     void DiagnosticsEngine::print(const data::DataLocation &location, std::string_view level,
                                   std::string_view code, std::string_view message)
