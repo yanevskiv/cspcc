@@ -1,6 +1,0 @@
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | X: print(2, 1)
--- A tuple assignment computes every value before it assigns any.
-
-X:: [ x, y: integer; x := 1; y := 2; (x, y) := (y, x); print(x, y) ]

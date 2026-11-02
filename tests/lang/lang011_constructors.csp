@@ -1,9 +1,0 @@
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | S: insert(4)
--- | S: has(4)
--- | S: stop()
--- An input takes only a message with its constructor, and a signal has no values.
-
-X:: [ S!insert(4); S!has(4); S!stop() ]
-S:: [ n: integer; X?insert(n); insert(n); X?has(n); has(n); X?stop(); stop() ]

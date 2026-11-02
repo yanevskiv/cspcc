@@ -1,4 +1,0 @@
--- (Test) Compiler error: [ERR_SEMA_UNDECLARED]
--- A signal is written with parentheses: wait(), not wait.
-
-[ A:: B!go() || B:: A?go ]

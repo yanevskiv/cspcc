@@ -1,3 +1,0 @@
--- (Test) Source: examples/producer_consumer.csp
--- (Test) Arguments: --delay=0
--- (Test) Check: producer_consumer

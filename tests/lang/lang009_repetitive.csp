@@ -1,6 +1,0 @@
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | X: print(55)
--- A repetitive command repeats until no guard is true.
-
-X:: [ i, sum: integer; i := 1; sum := 0; *[ i <= 10 -> [ sum := sum + i; i := i + 1 ] ]; print(sum) ]

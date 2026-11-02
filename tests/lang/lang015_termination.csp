@@ -1,8 +1,0 @@
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | C: print(3)
--- | C: done()
--- A loop whose inputs come from terminated processes ends, and the commands after it run.
-
-P:: [ C!1; C!1; C!1 ]
-C:: [ n, k: integer; k := 0; *[ P?n -> k := k + n ]; print(k); done() ]

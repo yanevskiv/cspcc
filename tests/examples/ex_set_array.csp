@@ -1,6 +1,0 @@
--- (Test) Source: examples/set_array.csp
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | S(0): print(9, true)
--- | S(0): print(5, false)
--- | S(0): print(1, true)

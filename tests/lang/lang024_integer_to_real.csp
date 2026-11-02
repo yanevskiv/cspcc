@@ -1,7 +1,0 @@
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | B: print(0.0)
--- An integer may be sent to an input of a real, as NORTH sends 0 on the slides.
-
-A:: B!0
-B:: [ x: real; A?x; print(x) ]

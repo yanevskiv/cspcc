@@ -1,6 +1,0 @@
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | X: print(true)
--- The slides' symbols: →, □, ‖, ≠, ≤ and ≥.
-
-[ X:: [ n: integer; Y?n; [ n ≠ 3 → skip □ n ≤ 3 ∧ n ≥ 3 → print(true) ] ] ‖ Y:: X!3 ]

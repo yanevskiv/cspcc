@@ -1,5 +1,0 @@
--- (Test) Compiler error: [ERR_SEMA_MACRO_RECURSIVE]
--- A macro can't use itself.
-
-X:: LOOP
-LOOP:: [ skip; LOOP ]

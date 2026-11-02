@@ -1,5 +1,0 @@
--- (Test) Compiler error: [ERR_PARSE_EXPECTED_SEMICOLON]
--- Commands are separated by semicolons, as the slides' CENTER forgets once.
-
-X:: [ x: integer; x := 1
-      x := 2 ]

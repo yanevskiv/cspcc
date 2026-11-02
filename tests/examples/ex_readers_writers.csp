@@ -1,3 +1,0 @@
--- (Test) Source: examples/readers_writers.csp
--- (Test) Arguments: --delay=2 --trace --timeout=2
--- (Test) Check: readers_writers

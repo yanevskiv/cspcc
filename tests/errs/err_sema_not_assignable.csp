@@ -1,4 +1,0 @@
--- (Test) Compiler error: [ERR_SEMA_NOT_ASSIGNABLE]
--- A process's index is a constant.
-
-[ X(i:1..2):: i := 3 ]

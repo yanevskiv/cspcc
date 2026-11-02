@@ -1,5 +1,0 @@
--- (Test) Source: examples/set.csp
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | X: print(3, true)
--- | X: print(4, false)

@@ -1,3 +1,0 @@
--- (Test) Source: examples/semaphore.csp
--- (Test) Arguments: --delay=1 --trace
--- (Test) Check: mutex

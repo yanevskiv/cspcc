@@ -1,4 +1,0 @@
--- (Test) Compiler error: [ERR_PARSE_CHAINED_COMPARISON]
--- Comparisons don't chain.
-
-X:: [ b: boolean; b := 1 < 2 < 3 ]

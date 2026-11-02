@@ -64,11 +64,12 @@ gnatmake readers_writers.adb
 and its name, then pauses for a moment.
 
 # Building
-You need `g++` (C++20) and `make`; running a translated program needs GNAT.
+You need `g++` (C++20) and `make`; running a translated program needs GNAT,
+and the tests need Catch2 3.
 
 ```sh
 make            # ./cspcc
-make test       # the CSP tests in tests/
+make test       # the Catch2 tests in tests/, which also build and run CSP programs
 make examples   # each examples/NAME.csp built into examples/NAME
 make clean
 ```

@@ -1,4 +1,0 @@
--- (Test) Compiler error: [ERR_PARSE_OUTPUT_GUARD]
--- CSP's guards end with an input, never an output, as the slides' NODE has.
-
-NODE:: *[ Bag!getTask(); Bag?getData(left, right) -> skip ]

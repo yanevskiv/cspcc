@@ -1,4 +1,0 @@
--- (Test) Source: examples/integral.csp
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | Bag: print(0.5)

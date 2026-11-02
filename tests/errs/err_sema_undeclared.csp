@@ -1,4 +1,0 @@
--- (Test) Compiler error: [ERR_SEMA_UNDECLARED]
--- A name is declared before it is used.
-
-X:: [ n := 1 ]

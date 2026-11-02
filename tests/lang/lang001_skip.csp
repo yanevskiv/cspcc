@@ -1,6 +1,0 @@
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | X: done()
--- skip does nothing, and a hook prints its process and its call.
-
-X:: [ skip; done() ]

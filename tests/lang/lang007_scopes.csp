@@ -1,7 +1,0 @@
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | X: print(2)
--- | X: print(1)
--- A declaration in a block hides an outer one until the block ends.
-
-X:: [ n: integer; n := 1; [ n: integer; n := 2; print(n) ]; print(n) ]

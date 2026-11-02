@@ -1,9 +1,0 @@
--- (Test) Arguments: --delay=0 --trace
--- (Test) Output:
--- | A -> B: has(1, 'x')
--- | B: got()
--- | B: got() end
--- --trace prints each communication and the end of each hook; a hook prints its start too.
-
-A:: B!has(1, 'x')
-B:: [ n: integer; c: character; A?has(n, c); got() ]

@@ -1,7 +1,0 @@
--- (Test) Compiler warning: [WARN_SEMA_UNKNOWN_TYPE]
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | X: print(5)
--- A type CSP doesn't know, such as the slides' portion, is taken as integer.
-
-X:: [ data: portion; data := 5; print(data) ]

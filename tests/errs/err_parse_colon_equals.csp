@@ -1,4 +1,0 @@
--- (Test) Compiler error: [ERR_PARSE_COLON_EQUALS]
--- The slides' ROOM writes v : = 4.
-
-ROOM:: [ v: integer; v : = 4 ]

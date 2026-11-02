@@ -1,4 +1,0 @@
--- (Test) Compiler error: [ERR_SEMA_UNKNOWN_PROCESS]
--- The slides' FORK names Pfil instead of Phil.
-
-[ Phil(i:0..1):: Fork(i)!in() || Fork(i:0..1):: Pfil(i)?in() ]

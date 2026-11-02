@@ -1,4 +1,0 @@
--- (Test) Compiler error: [ERR_SEMA_TYPE]
--- Types must match.
-
-X:: [ n: integer; n := 'a' ]

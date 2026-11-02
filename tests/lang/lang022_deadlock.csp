@@ -1,7 +1,0 @@
--- (Test) Arguments: --delay=0
--- (Test) Status: 3
--- (Test) Error: csp: deadlock
--- Two processes that wait for each other's output deadlock, and the watchdog says so.
-
-A:: [ n: integer; B?n ]
-B:: [ n: integer; A?n ]

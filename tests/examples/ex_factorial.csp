@@ -1,4 +1,0 @@
--- (Test) Source: examples/factorial.csp
--- (Test) Arguments: --delay=0
--- (Test) Output:
--- | fac(0): print(120)

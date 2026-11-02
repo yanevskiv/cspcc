@@ -1,4 +1,0 @@
--- (Test) Compiler error: [ERR_PARSE_INPUT_NOT_LAST]
--- The input ends a guard.
-
-X:: *[ n: integer; Y?n; n > 0 -> skip ]

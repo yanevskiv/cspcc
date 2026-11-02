@@ -1,5 +1,0 @@
-#!/bin/sh
-# producer_consumer - check that each portion producer i made, i * 100 + k, was consumed once.
-sed -n 's/^Consumer([0-9]*): consume(\([0-9]*\))$/\1/p' "$1" | sort -n > "$1.consumed"
-for p in 1 2 3 4 5; do for k in 0 1 2 3 4 5; do echo $((p * 100 + k)); done; done > "$1.expected"
-cmp -s "$1.expected" "$1.consumed" || { diff "$1.expected" "$1.consumed" | head; exit 1; }
