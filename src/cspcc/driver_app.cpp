@@ -1,7 +1,6 @@
 // (c) 2026 Ivan Janevski, GPLv3 or later; see LICENSE.md
 
 #include "cspcc/driver_app.h"
-#include "cspcc/ast_printer.h"
 #include "cspcc/diagnostics_engine.h"
 #include "cspcc/emit_ada_writer.h"
 #include "cspcc/emit_runtime.h"
@@ -73,10 +72,6 @@ namespace cspcc
         std::unique_ptr<data::DataAst> ast = parser.parse_program();
         if (!ast) {
             return 1;
-        }
-        if (m_options.dumps_ast()) {
-            AstPrinter(std::cout).print(*ast);
-            return 0;
         }
         SemaChecker checker(diagnostics);
         std::unique_ptr<data::DataProgram> program = checker.check(*ast, m_options.defines());

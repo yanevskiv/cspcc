@@ -2,7 +2,6 @@
 
 #include "cspcc/sema_checker.h"
 #include "cspcc/ast_cloner.h"
-#include "cspcc/ast_printer.h"
 #include "cspcc/lexer_tokenizer.h"
 #include "cspcc/parser_grammar.h"
 
@@ -715,8 +714,8 @@ namespace cspcc
                     result = Base::Boolean;
                 } else {
                     m_diagnostics.error(expression.m_location, "ERR_SEMA_TYPE",
-                                        "'" + std::string(AstPrinter::op_name(op)) +
-                                            "' can't take " + std::string(type_name(left)) +
+                                        std::string(LexerTokenizer::kind_name(op)) +
+                                            " can't take " + std::string(type_name(left)) +
                                             " and " + std::string(type_name(right)));
                 }
                 break;
@@ -827,8 +826,7 @@ namespace cspcc
         std::optional<long long> value = fold(expression);
         if (!value) {
             m_diagnostics.error(expression.m_location, "ERR_SEMA_NOT_CONSTANT",
-                                std::string(what) + " must be an integer constant, not " +
-                                    AstPrinter::expression_text(&expression));
+                                std::string(what) + " must be an integer constant");
         }
         return value;
     }

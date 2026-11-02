@@ -42,9 +42,6 @@ namespace cspcc
         // Report whether the tokens should be printed instead of translated.
         bool dumps_tokens() const;
 
-        // Report whether the syntax tree should be printed instead of translated.
-        bool dumps_ast() const;
-
         // Report whether the Ada runtime should be written next to the output.
         bool writes_runtime() const;
 
@@ -75,9 +72,6 @@ namespace cspcc
 
         // Whether the tokens are printed.
         bool m_dumps_tokens = false;
-
-        // Whether the syntax tree is printed.
-        bool m_dumps_ast = false;
 
         // Whether the Ada runtime is written.
         bool m_writes_runtime = true;

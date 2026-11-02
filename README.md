@@ -50,7 +50,6 @@ cspcc [options] INPUT
 | `-D NAME=VALUE` | Define the constant `NAME`, or override its `const` |
 | `--no-runtime` | Don't write `csp_runtime.ads` and `csp_runtime.adb` next to the output |
 | `--dump-tokens` | Print the tokens and stop |
-| `--dump-ast` | Print the syntax tree and stop |
 | `-w`, `-Werror` | Report no warnings, or report them as errors |
 
 A translated program takes these options:

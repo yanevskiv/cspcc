@@ -16,8 +16,6 @@ namespace cspcc
                 m_wants_version = true;
             } else if (arg == "--dump-tokens") {
                 m_dumps_tokens = true;
-            } else if (arg == "--dump-ast") {
-                m_dumps_ast = true;
             } else if (arg == "--no-runtime") {
                 m_writes_runtime = false;
             } else if (arg == "-w") {
@@ -65,7 +63,6 @@ namespace cspcc
                << "  --no-runtime       don't write csp_runtime.ads and csp_runtime.adb next to\n"
                << "                     OUTPUT\n"
                << "  --dump-tokens      print the tokens and stop\n"
-               << "  --dump-ast         print the syntax tree and stop\n"
                << "  -w                 report no warnings\n"
                << "  -Werror            report warnings as errors\n"
                << "  -h, --help         show this help and exit\n"
@@ -106,12 +103,6 @@ namespace cspcc
     bool DriverOptions::dumps_tokens() const
     {
         return m_dumps_tokens;
-    }
-
-    // Report --dump-ast.
-    bool DriverOptions::dumps_ast() const
-    {
-        return m_dumps_ast;
     }
 
     // Report whether --no-runtime was left out.
